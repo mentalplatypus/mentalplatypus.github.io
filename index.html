@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>mentalplatypus</title>
+<meta name="description" content="Ongoing projects and a portfolio of data visualization work by mentalplatypus.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Chivo+Mono:wght@400;600&display=swap">
+<style>
+  /* Layout: name and links, then "Ongoing projects" (featured cards), then "Portfolio" in groups of cards. Same tokens as Paper Arcade. */
+  :root {
+    --paper: #eef3f7;
+    --board: #fbfdff;
+    --grid: #cfe0ee;
+    --grid-major: #a9c6de;
+    --ink: #1d2a44;
+    --ink-soft: #5b6a85;
+    --apple: #d6372b;
+    --pen: #2459c9;
+    --win: #e8a400;
+    --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --font-mono: "Chivo Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0c1830; --board: #10203d; --grid: #1c3358; --grid-major: #2a4a7a;
+      --ink: #e8f0ff; --ink-soft: #8ea3c7; --apple: #ff6a55; --pen: #7aa7ff; --win: #ffc93d; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0c1830; --board: #10203d; --grid: #1c3358; --grid-major: #2a4a7a;
+    --ink: #e8f0ff; --ink-soft: #8ea3c7; --apple: #ff6a55; --pen: #7aa7ff; --win: #ffc93d; color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: var(--ink);
+    font-family: var(--font-mono);
+    padding-block: 56px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap { max-width: 920px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+  a { color: inherit; }
+  a:focus-visible { outline: 3px solid var(--apple); outline-offset: 3px; }
+
+  h1 {
+    font-family: var(--font-display); font-weight: 800; font-size: clamp(2.4rem, 8vw, 4.2rem);
+    letter-spacing: -0.04em; line-height: 0.95; margin: 0; overflow-wrap: anywhere;
+  }
+  .lede { margin: 14px 0 0; color: var(--ink-soft); font-size: 0.9rem; line-height: 1.6; max-width: 56ch; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0 0; padding: 0; list-style: none; }
+  .links a {
+    display: inline-block; font-weight: 600; font-size: 0.82rem; text-decoration: none;
+    padding: 7px 12px; border: 2px solid var(--ink); border-radius: 4px; background: var(--board);
+  }
+  .links a:hover { background: var(--grid); }
+
+  section { display: flex; flex-direction: column; gap: 20px; }
+  h2 {
+    font-family: var(--font-display); font-weight: 800; font-size: 1.9rem; letter-spacing: -0.03em; margin: 0;
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  }
+  h2 small { font-family: var(--font-mono); font-weight: 400; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+  h3 { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; margin: 12px 0 0; }
+
+  .card {
+    background: var(--board); border: 2px solid var(--ink); border-radius: 4px;
+    box-shadow: 6px 6px 0 var(--grid-major); padding: 18px; box-sizing: border-box;
+  }
+  .card h4 { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; letter-spacing: -0.015em; margin: 0; line-height: 1.2; }
+  .card p { margin: 0; font-size: 0.8rem; line-height: 1.55; color: var(--ink-soft); }
+  .card .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: auto; padding-top: 4px; font-size: 0.82rem; font-weight: 600; }
+  .card .actions a { text-decoration: none; border-bottom: 2px solid var(--grid-major); }
+  .card .actions a:hover { border-bottom-color: var(--apple); }
+
+  /* ongoing projects: wide cards with a picture beside the text */
+  .feature { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 22px; align-items: start; }
+  .feature canvas, .feature img { width: 100%; aspect-ratio: 1; display: block; border: 1px solid var(--grid-major); object-fit: cover; }
+  .feature .body { display: flex; flex-direction: column; gap: 10px; height: 100%; }
+  .feature h4 { font-size: 1.6rem; }
+  .status {
+    align-self: flex-start; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 8px; border: 2px solid currentColor; border-radius: 99px; color: var(--pen);
+  }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .tags li { font-size: 0.72rem; padding: 3px 8px; border: 1px solid var(--grid-major); border-radius: 3px; }
+  .next {
+    border: 2px dashed var(--grid-major); border-radius: 4px; padding: 18px; text-align: center;
+    color: var(--ink-soft); font-size: 0.8rem;
+  }
+  @media (max-width: 560px) {
+    .feature { grid-template-columns: minmax(0, 1fr); }
+    .feature canvas { max-width: 240px; }
+    .feature img { aspect-ratio: 16 / 9; object-position: top left; }
+  }
+
+  /* portfolio: a grid of small cards, each with a little chart drawing */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 20px; }
+  .grid .card { display: flex; flex-direction: column; gap: 8px; }
+  .glyph { display: block; width: 100%; height: auto; aspect-ratio: 5 / 3; border: 1px solid var(--grid); margin-bottom: 4px; }
+  .kind { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--pen); font-weight: 600; }
+
+  footer { color: var(--ink-soft); font-size: 0.75rem; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>mentalplatypus</h1>
+    <p class="lede">Things I'm building now, and data visualization work from before.</p>
+    <ul class="links">
+      <li><a href="https://github.com/mentalplatypus">GitHub</a></li>
+      <li><a href="https://codepen.io/mentalplatypus">CodePen</a></li>
+      <li><a href="https://public.tableau.com/views/InteractiveCOVID-19Dashboard/InteractiveDashboard">Tableau Public</a></li>
+    </ul>
+  </header>
+
+  <section aria-labelledby="ongoing">
+    <h2 id="ongoing">Ongoing projects</h2>
+
+    <!-- To add a project: copy this <article> and change the picture, text and links. -->
+    <article class="card feature">
+      <canvas data-thumb="arcade" width="440" height="440" aria-hidden="true"></canvas>
+      <div class="body">
+        <span class="status">Active</span>
+        <h4>Paper Arcade</h4>
+        <p>Small browser games drawn on graph paper. Each one is a single HTML file with synthesized sounds, light and dark themes, and no build step.</p>
+        <ul class="tags" aria-label="Games">
+          <li>Snake</li><li>Tic-Tac-Toe</li><li>Minesweeper</li><li>Ruler Merge</li><li>Sudoku</li><li>Dots &amp; Boxes</li>
+        </ul>
+        <div class="actions">
+          <a href="https://mentalplatypus.github.io/PaperArcadeGames/">Play →</a>
+          <a href="https://github.com/mentalplatypus/PaperArcadeGames">Source</a>
+        </div>
+      </div>
+    </article>
+
+    <div class="next">More projects coming soon</div>
+  </section>
+
+  <section aria-labelledby="portfolio">
+    <h2 id="portfolio">Portfolio <small>Data visualization · 2022</small></h2>
+
+    <h3>Dashboard · Tableau</h3>
+    <article class="card feature">
+      <img src="https://public.tableau.com/static/images/In/InteractiveCOVID-19Dashboard/InteractiveDashboard/1.png" alt="Preview of the COVID-19 dashboard" loading="lazy">
+      <div class="body">
+        <span class="kind">Interactive dashboard</span>
+        <h4>COVID-19 Dashboard</h4>
+        <p>An interactive Tableau dashboard of COVID-19 data, published on Tableau Public.</p>
+        <div class="actions">
+          <a href="https://public.tableau.com/views/InteractiveCOVID-19Dashboard/InteractiveDashboard">View dashboard →</a>
+          <a href="https://github.com/mentalplatypus/Interactive-COVID19-Dashboard">Repository</a>
+        </div>
+      </div>
+    </article>
+
+    <h3>Python · pandas &amp; matplotlib</h3>
+    <div class="grid">
+      <article class="card">
+        <svg class="glyph" data-glyph="stack" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Stacked area</span>
+        <h4>U.S. Greenhouse Gas Emissions by Sector</h4>
+        <p>Emissions from transportation, electricity, industry and more, 1990–2020. Data from the EPA.</p>
+        <div class="actions"><a href="https://github.com/mentalplatypus/US-CO2-Emission-Data">Code →</a></div>
+      </article>
+      <article class="card">
+        <svg class="glyph" data-glyph="stack" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Stacked area</span>
+        <h4>CO₂ Emissions by Continent</h4>
+        <p>Annual production-based CO₂ emissions for each continent, 1750–2020.</p>
+        <div class="actions"><a href="https://github.com/mentalplatypus/Continental-CO2-Emission-Data">Code →</a></div>
+      </article>
+      <article class="card">
+        <svg class="glyph" data-glyph="stack" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Stacked area</span>
+        <h4>CO₂ Emissions of the Top 10 Countries</h4>
+        <p>Annual production-based CO₂ emissions of the ten largest emitters, 1750–2020.</p>
+        <div class="actions"><a href="https://github.com/mentalplatypus/Top-Countries-CO2-Emission-Data">Code →</a></div>
+      </article>
+      <article class="card">
+        <svg class="glyph" data-glyph="line" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Line chart</span>
+        <h4>Irvine Rainfall, 2019–2022</h4>
+        <p>Total monthly rainfall in Irvine, California, one line per year.</p>
+        <div class="actions"><a href="https://github.com/mentalplatypus/Irvine-Rainfall-Data">Code →</a></div>
+      </article>
+    </div>
+
+    <h3>Web charts · CodePen</h3>
+    <div class="grid">
+      <article class="card">
+        <svg class="glyph" data-glyph="bar" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Interactive bar chart · D3</span>
+        <h4>Most Expensive CS:GO Skins</h4>
+        <p>A sortable bar chart of the priciest weapon skins.</p>
+        <div class="actions"><a href="https://codepen.io/mentalplatypus/pen/WNRJBmg">Live →</a><a href="https://github.com/mentalplatypus/Simple-Interactive-Bar-Chart-Most-Expensive-CSGO-Skins">Code</a></div>
+      </article>
+      <article class="card">
+        <svg class="glyph" data-glyph="choropleth" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Choropleth map</span>
+        <h4>Median Household Income, 2018</h4>
+        <p>A map shaded by median household income.</p>
+        <div class="actions"><a href="https://codepen.io/mentalplatypus/pen/rNjwWMv">Live →</a><a href="https://github.com/mentalplatypus/Basic-Choropleth-Map-Median-Household-Income-2018">Code</a></div>
+      </article>
+      <article class="card">
+        <svg class="glyph" data-glyph="spine" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Spine chart</span>
+        <h4>Population Pyramid of India, 2021</h4>
+        <p>Male and female population by age group, back to back.</p>
+        <div class="actions"><a href="https://codepen.io/mentalplatypus/pen/RwKXojw">Live →</a><a href="https://github.com/mentalplatypus/Deviation-Spine-Chart-Population-Pyramid-of-India-2021">Code</a></div>
+      </article>
+      <article class="card">
+        <svg class="glyph" data-glyph="bubble" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Bubble chart</span>
+        <h4>Popular NBA Players</h4>
+        <p>Player stats plotted against each other, with bubble size as a third measure.</p>
+        <div class="actions"><a href="https://codepen.io/mentalplatypus/pen/XWNNMbM">Live →</a><a href="https://github.com/mentalplatypus/Bubblechart-of-Popular-NBA-Players">Code</a></div>
+      </article>
+      <article class="card">
+        <svg class="glyph" data-glyph="paired" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Paired column chart</span>
+        <h4>U.S. Summer Olympic Medals</h4>
+        <p>Medal counts side by side for comparison.</p>
+        <div class="actions"><a href="https://codepen.io/mentalplatypus/pen/poNQPmM">Live →</a><a href="https://github.com/mentalplatypus/Paired-Bar-Graph-of-U.S.-Summer-Olympic-Medals">Code</a></div>
+      </article>
+      <article class="card">
+        <svg class="glyph" data-glyph="line" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Line chart</span>
+        <h4>U.S. Inflation, 1960–1990</h4>
+        <p>Annual inflation rates over three decades.</p>
+        <div class="actions"><a href="https://codepen.io/mentalplatypus/pen/yLVQgzO">Live →</a><a href="https://github.com/mentalplatypus/Line-Graph-of-US-Inflation-Rates-from-1960-1990">Code</a></div>
+      </article>
+      <article class="card">
+        <svg class="glyph" data-glyph="box" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Boxplot</span>
+        <h4>Math Quiz Scores</h4>
+        <p>The spread of scores across a set of sample quizzes.</p>
+        <div class="actions"><a href="https://codepen.io/mentalplatypus/pen/VwmVbXb">Live →</a><a href="https://github.com/mentalplatypus/Boxplot-of-Sample-Math-Quiz-Scores">Code</a></div>
+      </article>
+      <article class="card">
+        <svg class="glyph" data-glyph="scatter" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Interactive scatterplot</span>
+        <h4>Heights and Weights</h4>
+        <p>An interactive scatterplot of sample heights and weights. Work in progress.</p>
+        <div class="actions"><a href="https://codepen.io/mentalplatypus/pen/dyNEmVz">Live →</a><a href="https://github.com/mentalplatypus/WIP-Interactive-Scatterplot-Sample-Height-Weight-Data">Code</a></div>
+      </article>
+      <article class="card">
+        <svg class="glyph" data-glyph="scatter" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Scatterplot</span>
+        <h4>Children's Heights and Weights</h4>
+        <p>How height and weight relate in a sample of children.</p>
+        <div class="actions"><a href="https://codepen.io/mentalplatypus/pen/abBmbRy">Live →</a><a href="https://github.com/mentalplatypus/Simple-Scatterplot-of-Children-Heights-and-Weights">Code</a></div>
+      </article>
+    </div>
+  </section>
+
+  <footer>Hosted on GitHub Pages.</footer>
+</div>
+
+<script>
+  // Little hand-drawn charts for the portfolio cards, and the Paper Arcade picture, in the current theme's colors.
+  const GLYPHS = {
+    stack: () => {
+      const tops = [[70, 66, 60, 50, 38, 24], [80, 77, 72, 64, 55, 44], [86, 84, 81, 76, 70, 63]];
+      const xs = [10, 36, 62, 88, 114, 140];
+      const area = (ys, below, cls) => {
+        const top = ys.map((y, i) => `${xs[i]},${y}`).join(" ");
+        const bottom = below.map((y, i) => `${xs[i]},${y}`).reverse().join(" ");
+        return `<polygon points="${top} ${bottom}" class="${cls}"/>`;
+      };
+      return area(tops[0], tops[1], "f-ink") + area(tops[1], tops[2], "f-apple") + area(tops[2], xs.map(() => 86), "f-pen");
+    },
+    line: () => {
+      const series = [[[10, 60], [40, 48], [70, 56], [100, 30], [140, 38], "s-ink"], [[10, 72], [40, 66], [70, 40], [100, 52], [140, 22], "s-apple"]];
+      return series.map(s => {
+        const cls = s.pop();
+        return `<polyline points="${s.map(p => p.join(",")).join(" ")}" class="${cls}"/>` + s.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3" class="${cls.replace("s-", "f-")}"/>`).join("");
+      }).join("");
+    },
+    bar: () => [62, 50, 41, 33, 26, 20].map((w, i) => `<rect x="14" y="${12 + i * 12}" width="${w * 1.9}" height="8" class="${i ? "f-pen" : "f-apple"}"/>`).join(""),
+    paired: () => [[50, 38], [64, 52], [44, 30], [70, 60]].map(([a, b], i) => {
+      const x = 20 + i * 32;
+      return `<rect x="${x}" y="${86 - a}" width="10" height="${a}" class="f-ink"/><rect x="${x + 11}" y="${86 - b}" width="10" height="${b}" class="f-apple"/>`;
+    }).join(""),
+    spine: () => [12, 18, 24, 28, 30, 30, 26].map((w, i) => {
+      const y = 10 + i * 10.5;
+      return `<rect x="${75 - w * 1.6}" y="${y}" width="${w * 1.6}" height="8" class="f-pen"/><rect x="75" y="${y}" width="${w * 1.5}" height="8" class="f-apple"/>`;
+    }).join("") + `<line x1="75" y1="6" x2="75" y2="86" class="s-ink"/>`,
+    bubble: () => [[30, 62, 8, "f-pen"], [58, 44, 14, "f-apple"], [92, 52, 10, "f-pen"], [112, 26, 16, "f-ink"], [72, 70, 6, "f-apple"]]
+      .map(([x, y, r, c]) => `<circle cx="${x}" cy="${y}" r="${r}" class="${c} soft"/>`).join(""),
+    scatter: () => [[18, 72], [28, 66], [36, 64], [44, 56], [52, 58], [60, 48], [70, 50], [78, 40], [88, 42], [96, 34], [106, 30], [116, 28], [128, 18], [64, 62], [100, 44]]
+      .map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="3.2" class="${i % 5 ? "f-pen" : "f-apple"}"/>`).join(""),
+    box: () => [[24, 30, 44, 60, 74], [24, 36, 50, 62, 78], [16, 26, 38, 52, 66]].map(([lo, q1, med, q3, hi], i) => {
+      const x = 30 + i * 38;
+      return `<line x1="${x + 10}" y1="${lo}" x2="${x + 10}" y2="${hi}" class="s-ink"/>` +
+        `<rect x="${x}" y="${q1}" width="20" height="${q3 - q1}" class="f-board s-ink"/>` +
+        `<line x1="${x}" y1="${med}" x2="${x + 20}" y2="${med}" class="s-apple thick"/>`;
+    }).join(""),
+    choropleth: () => {
+      const shades = ["a1", "a3", "a2", "a4", "a2", "a1", "a3", "a4", "a2", "a3", "a1", "a2"];
+      return shades.map((s, i) => {
+        const x = 14 + (i % 4) * 31 + (Math.floor(i / 4) % 2) * 6, y = 10 + Math.floor(i / 4) * 24;
+        return `<rect x="${x}" y="${y}" width="29" height="22" rx="2" class="${s}"/>`;
+      }).join("");
+    },
+  };
+
+  function draw() {
+    const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+    const style = `<style>
+      .f-ink{fill:${css("--ink")}} .f-apple{fill:${css("--apple")}} .f-pen{fill:${css("--pen")}} .f-board{fill:${css("--board")}}
+      .s-ink,.s-apple{fill:none;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round} .s-ink{stroke:${css("--ink")}} .s-apple{stroke:${css("--apple")}}
+      .thick{stroke-width:3.5} .soft{fill-opacity:.75}
+      .a1{fill:color-mix(in srgb,${css("--pen")} 18%,${css("--board")})} .a2{fill:color-mix(in srgb,${css("--pen")} 42%,${css("--board")})}
+      .a3{fill:color-mix(in srgb,${css("--pen")} 68%,${css("--board")})} .a4{fill:${css("--pen")}}
+    </style>`;
+    // graph paper under each chart
+    const paper = `<rect width="150" height="90" fill="${css("--board")}"/>` +
+      Array.from({ length: 11 }, (_, i) => `<line x1="${i * 15}" y1="0" x2="${i * 15}" y2="90" stroke="${css("--grid")}" stroke-width="0.6"/>`).join("") +
+      Array.from({ length: 7 }, (_, i) => `<line x1="0" y1="${i * 15}" x2="150" y2="${i * 15}" stroke="${css("--grid")}" stroke-width="0.6"/>`).join("");
+    document.querySelectorAll("svg[data-glyph]").forEach(svg => { svg.innerHTML = style + paper + GLYPHS[svg.dataset.glyph](); });
+
+    // Paper Arcade: a snake winding past a few tic-tac-toe marks and a sudoku corner on one sheet
+    document.querySelectorAll('canvas[data-thumb="arcade"]').forEach(cv => {
+      const ctx = cv.getContext("2d"), W = cv.width, N = 10, c = W / N;
+      ctx.fillStyle = css("--board"); ctx.fillRect(0, 0, W, W);
+      ctx.strokeStyle = css("--grid"); ctx.lineWidth = 1.5;
+      for (let i = 1; i < N; i++) {
+        ctx.beginPath(); ctx.moveTo(i * c, 0); ctx.lineTo(i * c, W); ctx.moveTo(0, i * c); ctx.lineTo(W, i * c); ctx.stroke();
+      }
+      const path = [[1, 8], [1, 5], [4, 5], [4, 7], [6, 7]];
+      ctx.strokeStyle = css("--ink"); ctx.lineWidth = c * 0.6; ctx.lineCap = ctx.lineJoin = "round";
+      ctx.beginPath();
+      path.forEach(([x, y], i) => i ? ctx.lineTo((x + 0.5) * c, (y + 0.5) * c) : ctx.moveTo((x + 0.5) * c, (y + 0.5) * c));
+      ctx.stroke();
+      ctx.fillStyle = css("--apple");
+      ctx.beginPath(); ctx.arc(8.5 * c, 7.5 * c, c * 0.32, 0, Math.PI * 2); ctx.fill();
+      // an X and an O
+      ctx.lineWidth = c * 0.16;
+      ctx.beginPath(); ctx.moveTo(1.25 * c, 1.25 * c); ctx.lineTo(2.75 * c, 2.75 * c); ctx.moveTo(2.75 * c, 1.25 * c); ctx.lineTo(1.25 * c, 2.75 * c); ctx.stroke();
+      ctx.strokeStyle = css("--apple");
+      ctx.beginPath(); ctx.arc(5 * c, 2 * c, c * 0.75, 0, Math.PI * 2); ctx.stroke();
+      // a few sudoku digits
+      ctx.fillStyle = css("--pen"); ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.font = `800 ${c * 0.62}px "Bricolage Grotesque", system-ui, sans-serif`;
+      [[7, 1, 4], [8, 1, 9], [7, 2, 2], [8, 3, 7]].forEach(([x, y, d]) => ctx.fillText(d, (x + 0.5) * c, (y + 0.5) * c + 2));
+    });
+  }
+  document.fonts && document.fonts.ready.then(draw);
+  draw();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
