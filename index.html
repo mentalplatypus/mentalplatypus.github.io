@@ -6,106 +6,116 @@
 <meta name="description" content="Ongoing projects and a portfolio of data visualization work by David Wang.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Chivo+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Inter:wght@400;500;600&display=swap">
 <style>
-  /* Layout: name and links, then "Ongoing projects" (featured cards), then "Portfolio" in groups of cards. Same tokens as Paper Arcade. */
+  /* Layout: name and links, then "Ongoing projects", "Finished projects" and "Portfolio" in groups of cards.
+     Dusk theme: a soft indigo → lilac → peach gradient (night blue → violet → plum in dark mode) with frosted cards.
+     Shared with the HoYo Version Tracker and the Python chart pages; Paper Arcade keeps its own graph-paper look.
+     --apple, --pen, --win and --leaf are the chart colors used by the card drawings. */
   :root {
-    --paper: #eef3f7;
-    --board: #fbfdff;
-    --grid: #cfe0ee;
-    --grid-major: #a9c6de;
-    --ink: #1d2a44;
-    --ink-soft: #5b6a85;
-    --apple: #d6372b;
-    --pen: #2459c9;
-    --win: #e8a400;
-    --leaf: #2f8a3e;
+    --bg-1: #eef0ff; --bg-2: #f6eefc; --bg-3: #fff1ea;
+    --surface: rgba(255, 255, 255, 0.78);
+    --board: #ffffff;
+    --line: rgba(40, 34, 110, 0.12);
+    --grid: #e3e5f6;
+    --ink: #1e1b3a;
+    --ink-soft: #5d5a7a;
+    --accent: #5b5bd6;
+    --shadow: 0 1px 2px rgba(40, 34, 110, 0.06), 0 12px 32px rgba(40, 34, 110, 0.08);
+    --apple: #d6453b;
+    --pen: #4a5fd6;
+    --win: #e3a21a;
+    --leaf: #2f9a5a;
     --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-    --font-mono: "Chivo Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --paper: #0c1830; --board: #10203d; --grid: #1c3358; --grid-major: #2a4a7a;
-      --ink: #e8f0ff; --ink-soft: #8ea3c7; --apple: #ff6a55; --pen: #7aa7ff; --win: #ffc93d; --leaf: #6cc77a; color-scheme: dark;
+      --bg-1: #0f1226; --bg-2: #1d1438; --bg-3: #2a1a2e;
+      --surface: rgba(255, 255, 255, 0.06); --board: #1a1833; --line: rgba(255, 255, 255, 0.12); --grid: #2b2850;
+      --ink: #ecebff; --ink-soft: #a6a3c8; --accent: #8f8cff; --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.35);
+      --apple: #ff7a6b; --pen: #8f9cff; --win: #ffc85a; --leaf: #6fd59a; color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --paper: #0c1830; --board: #10203d; --grid: #1c3358; --grid-major: #2a4a7a;
-    --ink: #e8f0ff; --ink-soft: #8ea3c7; --apple: #ff6a55; --pen: #7aa7ff; --win: #ffc93d; --leaf: #6cc77a; color-scheme: dark;
+    --bg-1: #0f1226; --bg-2: #1d1438; --bg-3: #2a1a2e;
+    --surface: rgba(255, 255, 255, 0.06); --board: #1a1833; --line: rgba(255, 255, 255, 0.12); --grid: #2b2850;
+    --ink: #ecebff; --ink-soft: #a6a3c8; --accent: #8f8cff; --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.35);
+    --apple: #ff7a6b; --pen: #8f9cff; --win: #ffc85a; --leaf: #6fd59a; color-scheme: dark;
   }
 
   body {
     margin: 0;
-    background-color: var(--paper);
-    background-image:
-      linear-gradient(var(--grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-    background-size: 24px 24px;
+    min-height: 100vh;
+    background-color: var(--bg-1);
+    background-image: linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+    background-attachment: fixed;
     color: var(--ink);
-    font-family: var(--font-mono);
-    padding-block: 56px;
+    font-family: var(--font-body);
+    padding-block: 64px;
     padding-left: max(16px, env(safe-area-inset-left, 0px));
     padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
   .wrap { max-width: 920px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
   a { color: inherit; }
-  a:focus-visible { outline: 3px solid var(--apple); outline-offset: 3px; }
+  a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 
   h1 {
     font-family: var(--font-display); font-weight: 800; font-size: clamp(2.4rem, 8vw, 4.2rem);
     letter-spacing: -0.04em; line-height: 0.95; margin: 0; overflow-wrap: anywhere;
   }
-  .lede { margin: 14px 0 0; color: var(--ink-soft); font-size: 0.9rem; line-height: 1.6; max-width: 56ch; }
-  .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0 0; padding: 0; list-style: none; }
+  .lede { margin: 14px 0 0; color: var(--ink-soft); font-size: 1rem; line-height: 1.6; max-width: 56ch; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 0; padding: 0; list-style: none; }
   .links a {
-    display: inline-block; font-weight: 600; font-size: 0.82rem; text-decoration: none;
-    padding: 7px 12px; border: 2px solid var(--ink); border-radius: 4px; background: var(--board);
+    display: inline-block; font-weight: 600; font-size: 0.85rem; text-decoration: none;
+    padding: 8px 15px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface);
+    transition: border-color 0.15s, color 0.15s;
   }
-  .links a:hover { background: var(--grid); }
+  .links a:hover { border-color: var(--accent); color: var(--accent); }
 
   section { display: flex; flex-direction: column; gap: 20px; }
   h2 {
     font-family: var(--font-display); font-weight: 800; font-size: 1.9rem; letter-spacing: -0.03em; margin: 0;
     display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
   }
-  h2 small { font-family: var(--font-mono); font-weight: 400; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
-  h3 { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; margin: 12px 0 0; }
+  h2 small { font-family: var(--font-body); font-weight: 500; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+  h3 { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; margin: 12px 0 0; }
 
   .card {
-    background: var(--board); border: 2px solid var(--ink); border-radius: 4px;
-    box-shadow: 6px 6px 0 var(--grid-major); padding: 18px; box-sizing: border-box;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+    box-shadow: var(--shadow); padding: 20px; box-sizing: border-box;
   }
   .card h4 { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; letter-spacing: -0.015em; margin: 0; line-height: 1.2; }
-  .card p { margin: 0; font-size: 0.8rem; line-height: 1.55; color: var(--ink-soft); }
-  .card .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: auto; padding-top: 4px; font-size: 0.82rem; font-weight: 600; }
-  .card .actions a { text-decoration: none; border-bottom: 2px solid var(--grid-major); }
-  .card .actions a:hover { border-bottom-color: var(--apple); }
+  .card p { margin: 0; font-size: 0.88rem; line-height: 1.55; color: var(--ink-soft); }
+  .card .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: auto; padding-top: 4px; font-size: 0.85rem; font-weight: 600; }
+  .card .actions a { text-decoration: none; border-bottom: 2px solid var(--line); }
+  .card .actions a:hover { border-bottom-color: var(--accent); }
   /* the main link (Live, Play, View dashboard) stretches over the whole card; the other links sit above it */
-  .card { position: relative; transition: transform 0.12s, box-shadow 0.12s; }
+  .card { position: relative; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; }
   .card .actions a.primary::after { content: ""; position: absolute; inset: 0; z-index: 1; }
   .card .actions a:not(.primary) { position: relative; z-index: 2; }
-  .card:has(a.primary):hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--grid-major); }
+  .card:has(a.primary):hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
   /* hovering CodePen or Code underlines only that link, not the main one too */
-  .card:has(a.primary):hover:not(:has(.actions a:not(.primary):hover)) a.primary { border-bottom-color: var(--apple); }
+  .card:has(a.primary):hover:not(:has(.actions a:not(.primary):hover)) a.primary { border-bottom-color: var(--accent); }
   .card .actions a.primary:focus-visible { outline: none; }
-  .card:has(a.primary:focus-visible) { outline: 3px solid var(--apple); outline-offset: 3px; }
+  .card:has(a.primary:focus-visible) { outline: 3px solid var(--accent); outline-offset: 3px; }
   @media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:has(a.primary):hover { transform: none; } }
 
-  /* ongoing projects: wide cards with a picture beside the text */
-  .feature { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 22px; align-items: start; }
-  .feature canvas, .feature img { width: 100%; aspect-ratio: 1; display: block; border: 1px solid var(--grid-major); object-fit: cover; }
+  /* projects: wide cards with a picture beside the text */
+  .feature { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .feature canvas, .feature img { width: 100%; aspect-ratio: 1; display: block; border: 1px solid var(--line); border-radius: 12px; object-fit: cover; }
   .feature .body { display: flex; flex-direction: column; gap: 10px; height: 100%; }
   .feature h4 { font-size: 1.6rem; }
   .status {
-    align-self: flex-start; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 3px 8px; border: 2px solid currentColor; border-radius: 99px; color: var(--pen);
+    align-self: flex-start; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 99px; color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent);
   }
-  .status.done { color: var(--leaf); }
+  .status.done { color: var(--leaf); background: color-mix(in srgb, var(--leaf) 14%, transparent); }
   .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
-  .tags li { font-size: 0.72rem; padding: 3px 8px; border: 1px solid var(--grid-major); border-radius: 3px; }
+  .tags li { font-size: 0.75rem; padding: 3px 10px; border: 1px solid var(--line); border-radius: 99px; }
   .next {
-    border: 2px dashed var(--grid-major); border-radius: 4px; padding: 18px; text-align: center;
-    color: var(--ink-soft); font-size: 0.8rem;
+    border: 1px dashed var(--line); border-radius: 16px; padding: 18px; text-align: center;
+    color: var(--ink-soft); font-size: 0.85rem;
   }
   @media (max-width: 560px) {
     .feature { grid-template-columns: minmax(0, 1fr); }
@@ -116,10 +126,10 @@
   /* portfolio: a grid of small cards, each with a little chart drawing */
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 20px; }
   .grid .card { display: flex; flex-direction: column; gap: 8px; }
-  .glyph { display: block; width: 100%; height: auto; aspect-ratio: 5 / 3; border: 1px solid var(--grid); margin-bottom: 4px; }
-  .kind { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--pen); font-weight: 600; }
+  .glyph { display: block; width: 100%; height: auto; aspect-ratio: 5 / 3; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 4px; }
+  .kind { font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
 
-  footer { color: var(--ink-soft); font-size: 0.75rem; }
+  footer { color: var(--ink-soft); font-size: 0.8rem; }
 </style>
 
 <div class="wrap">
@@ -412,13 +422,12 @@
       .a1{fill:color-mix(in srgb,${css("--pen")} 18%,${css("--board")})} .a2{fill:color-mix(in srgb,${css("--pen")} 42%,${css("--board")})}
       .a3{fill:color-mix(in srgb,${css("--pen")} 68%,${css("--board")})} .a4{fill:${css("--pen")}}
     </style>`;
-    // graph paper under each chart
+    // a plain card under each chart, with a few faint guide lines
     const paper = `<rect width="150" height="90" fill="${css("--board")}"/>` +
-      Array.from({ length: 11 }, (_, i) => `<line x1="${i * 15}" y1="0" x2="${i * 15}" y2="90" stroke="${css("--grid")}" stroke-width="0.6"/>`).join("") +
-      Array.from({ length: 7 }, (_, i) => `<line x1="0" y1="${i * 15}" x2="150" y2="${i * 15}" stroke="${css("--grid")}" stroke-width="0.6"/>`).join("");
+      Array.from({ length: 3 }, (_, i) => `<line x1="0" y1="${22.5 * (i + 1)}" x2="150" y2="${22.5 * (i + 1)}" stroke="${css("--grid")}" stroke-width="0.6"/>`).join("");
     document.querySelectorAll("svg[data-glyph]").forEach(svg => { svg.innerHTML = style + paper + GLYPHS[svg.dataset.glyph](svg.dataset); });
 
-    // Paper Arcade: a snake winding past a few tic-tac-toe marks and a sudoku corner on one sheet
+    // Paper Arcade keeps its graph paper: a snake winding past a few tic-tac-toe marks and a sudoku corner on one sheet
     document.querySelectorAll('canvas[data-thumb="arcade"]').forEach(cv => {
       const ctx = cv.getContext("2d"), W = cv.width, N = 10, c = W / N;
       ctx.fillStyle = css("--board"); ctx.fillRect(0, 0, W, W);
@@ -448,10 +457,6 @@
     document.querySelectorAll('canvas[data-thumb="tracker"]').forEach(cv => {
       const ctx = cv.getContext("2d"), W = cv.width, N = 10, c = W / N;
       ctx.fillStyle = css("--board"); ctx.fillRect(0, 0, W, W);
-      ctx.strokeStyle = css("--grid"); ctx.lineWidth = 1.5;
-      for (let i = 1; i < N; i++) {
-        ctx.beginPath(); ctx.moveTo(i * c, 0); ctx.lineTo(i * c, W); ctx.moveTo(0, i * c); ctx.lineTo(W, i * c); ctx.stroke();
-      }
       const rows = [["--leaf", 0.5, [2.4, 2.4, 2.4]], ["--pen", 0.1, [2.6, 2.4, 2.4]], ["--win", 1.2, [2.4, 2.4, 2.4]]];
       const now = 6.2;
       rows.forEach(([color, x0, lens], r) => {
@@ -460,11 +465,11 @@
         lens.concat([2.4, 2.4]).forEach((len, k) => {
           const px = x * c + 4, w = len * c - 8;
           if (x + len > 0 && x < N) {
+            ctx.beginPath(); ctx.roundRect(px, y, w, h, 8);
             if (x < now) {
-              ctx.fillStyle = css(color); ctx.globalAlpha = k % 2 ? 0.6 : 0.9; ctx.fillRect(px, y, w, h); ctx.globalAlpha = 1;
-              ctx.strokeStyle = css("--ink"); ctx.lineWidth = 3; ctx.setLineDash([]); ctx.strokeRect(px, y, w, h);
+              ctx.fillStyle = css(color); ctx.globalAlpha = k % 2 ? 0.55 : 0.9; ctx.fill(); ctx.globalAlpha = 1;
             } else {
-              ctx.strokeStyle = css(color); ctx.lineWidth = 3; ctx.setLineDash([10, 7]); ctx.strokeRect(px, y, w, h); ctx.setLineDash([]);
+              ctx.strokeStyle = css(color); ctx.lineWidth = 3; ctx.setLineDash([10, 7]); ctx.stroke(); ctx.setLineDash([]);
             }
           }
           x += len;

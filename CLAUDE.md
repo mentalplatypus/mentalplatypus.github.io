@@ -1,6 +1,8 @@
 # David Wang's home page
 
-Personal home page with ongoing projects, finished projects, and a portfolio of data visualization work. It shares Paper Arcade's graph-paper style: the same design tokens, fonts, and light/dark themes.
+Personal home page with ongoing projects, finished projects, and a portfolio of data visualization work. It uses the **Dusk** theme, shared with the HoYo Version Tracker and the four Python chart pages: a soft gradient background (light: indigo `#eef0ff` → lilac `#f6eefc` → peach `#fff1ea`; dark: `#0f1226` → `#1d1438` → `#2a1a2e`), translucent white cards with 1px hairline borders, 16px corners and soft shadows, pill-shaped buttons and tags, and an indigo accent (`--accent`, `#5b5bd6` / `#8f8cff` dark). Fonts: Bricolage Grotesque for headings, Inter for text. Graph paper belongs to Paper Arcade only; its card drawing on this page keeps a grid because it pictures that project. No `backdrop-filter` on cards: blurring every card made the page slow to render.
+
+Tokens `--apple`, `--pen`, `--win` and `--leaf` are chart colors for the card drawings; `--board` is the drawings' background and `--grid` their faint guide lines.
 
 - Repository: https://github.com/mentalplatypus/mentalplatypus.github.io (public, branch **`master`**, not `main`)
 - Live site: https://mentalplatypus.github.io/ (GitHub Pages redeploys on every push to `master`)
