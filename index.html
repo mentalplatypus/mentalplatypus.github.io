@@ -530,30 +530,27 @@
       ctx.beginPath(); ctx.moveTo(now * c, 1.2 * c); ctx.lineTo(now * c, 8.8 * c); ctx.stroke();
     });
 
-    // Weather Forecast: a sun behind a cloud over a 24-hour temperature line
+    // Weather Forecast: a sun at top left and a rain cloud at bottom right
     document.querySelectorAll('canvas[data-thumb="weather"]').forEach(cv => {
       const ctx = cv.getContext("2d"), W = cv.width, c = W / 10;
       ctx.fillStyle = css("--board"); ctx.fillRect(0, 0, W, W);
-      const sx = 3.6 * c, sy = 3.2 * c, r = 1.15 * c;
-      ctx.strokeStyle = ctx.fillStyle = css("--win"); ctx.lineWidth = 10; ctx.lineCap = "round";
+      ctx.lineCap = "round";
+      const sx = 3.2 * c, sy = 3.0 * c, r = 1.15 * c;
+      ctx.strokeStyle = ctx.fillStyle = css("--win"); ctx.lineWidth = 10;
       for (let i = 0; i < 8; i++) {
         const a = i * Math.PI / 4;
-        ctx.beginPath(); ctx.moveTo(sx + Math.cos(a) * (r + 18), sy + Math.sin(a) * (r + 18)); ctx.lineTo(sx + Math.cos(a) * (r + 38), sy + Math.sin(a) * (r + 38)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(sx + Math.cos(a) * (r + 18), sy + Math.sin(a) * (r + 18)); ctx.lineTo(sx + Math.cos(a) * (r + 40), sy + Math.sin(a) * (r + 40)); ctx.stroke();
       }
       ctx.beginPath(); ctx.arc(sx, sy, r, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath();
-      ctx.arc(5.0 * c, 4.6 * c, 1.1 * c, Math.PI * 0.5, Math.PI * 1.5);
-      ctx.arc(6.0 * c, 3.6 * c, 1.45 * c, Math.PI * 1.05, Math.PI * 1.95);
-      ctx.arc(7.3 * c, 4.5 * c, 1.0 * c, Math.PI * 1.5, Math.PI * 0.5);
-      ctx.closePath(); ctx.fillStyle = css("--board"); ctx.fill();
-      ctx.fillStyle = css("--ink"); ctx.globalAlpha = 0.2; ctx.fill(); ctx.globalAlpha = 1;
-      const temps = [7.6, 7.9, 8.1, 7.7, 7.0, 6.6, 6.8, 7.4, 7.8];
-      const pts = temps.map((t, i) => [(0.8 + i * 1.05) * c, t * c]);
-      ctx.fillStyle = css("--pen"); ctx.globalAlpha = 0.16;
-      ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
-      ctx.lineTo(pts[pts.length - 1][0], 9.2 * c); ctx.lineTo(pts[0][0], 9.2 * c); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
-      ctx.strokeStyle = css("--pen"); ctx.lineWidth = 7; ctx.lineJoin = "round";
-      ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+      ctx.arc(5.4 * c, 6.3 * c, 1.0 * c, Math.PI * 0.5, Math.PI * 1.5);
+      ctx.arc(6.5 * c, 5.3 * c, 1.4 * c, Math.PI * 1.05, Math.PI * 1.95);
+      ctx.arc(7.7 * c, 6.3 * c, 1.0 * c, Math.PI * 1.5, Math.PI * 0.5);
+      ctx.closePath(); ctx.fillStyle = css("--ink"); ctx.globalAlpha = 0.24; ctx.fill(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = css("--pen"); ctx.lineWidth = 9;
+      [5.5, 6.55, 7.6].forEach(x => {
+        ctx.beginPath(); ctx.moveTo(x * c, 7.9 * c); ctx.lineTo((x - 0.3) * c, 8.9 * c); ctx.stroke();
+      });
     });
   }
   document.fonts && document.fonts.ready.then(draw);
