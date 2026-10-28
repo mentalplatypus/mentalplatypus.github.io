@@ -87,16 +87,17 @@
   }
   .card h4 { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; letter-spacing: -0.015em; margin: 0; line-height: 1.2; }
   .card p { margin: 0; font-size: 0.88rem; line-height: 1.55; color: var(--ink-soft); }
-  .card .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: auto; padding-top: 4px; font-size: 0.85rem; font-weight: 600; }
-  .card .actions a { text-decoration: none; border-bottom: 2px solid var(--line); }
-  .card .actions a:hover { border-bottom-color: var(--accent); }
+  .card .actions { display: flex; flex-wrap: wrap; align-items: baseline; gap: 14px; margin-top: auto; padding-top: 4px; font-size: 0.85rem; font-weight: 600; }
+  /* a text underline rather than a border, so links whose arrow comes from a fallback font still line up */
+  .card .actions a { text-decoration: underline 2px var(--line); text-underline-offset: 5px; }
+  .card .actions a:hover { text-decoration-color: var(--accent); }
   /* the main link (Live, Play, View dashboard) stretches over the whole card; the other links sit above it */
   .card { position: relative; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; }
   .card .actions a.primary::after { content: ""; position: absolute; inset: 0; z-index: 1; }
   .card .actions a:not(.primary) { position: relative; z-index: 2; }
   .card:has(a.primary):hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
   /* hovering CodePen or Code underlines only that link, not the main one too */
-  .card:has(a.primary):hover:not(:has(.actions a:not(.primary):hover)) a.primary { border-bottom-color: var(--accent); }
+  .card:has(a.primary):hover:not(:has(.actions a:not(.primary):hover)) a.primary { text-decoration-color: var(--accent); }
   .card .actions a.primary:focus-visible { outline: none; }
   .card:has(a.primary:focus-visible) { outline: 3px solid var(--accent); outline-offset: 3px; }
   @media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:has(a.primary):hover { transform: none; } }
