@@ -538,7 +538,8 @@
       // laid out on a 512-unit square: sun at upper right, a big cloud in front of it, a small cloud
       // tucked in at lower right, and three rain dashes under the big cloud
       const dark = (document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark";
-      ctx.save(); ctx.translate(W * 0.05, W * 0.03); ctx.scale(W * 0.9 / 512, W * 0.9 / 512);
+      // drawn at 74% of the square and centered, leaving a margin on every side
+      ctx.save(); ctx.translate(W * 0.13, W * 0.124); ctx.scale(W * 0.74 / 512, W * 0.74 / 512);
       const linear = (x0, y0, x1, y1, a, b) => { const g = ctx.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, a); g.addColorStop(1, b); return g; };
       ctx.lineCap = "round";
       ctx.strokeStyle = "#f6c427"; ctx.lineWidth = 20;
