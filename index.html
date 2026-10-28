@@ -19,18 +19,19 @@
     --apple: #d6372b;
     --pen: #2459c9;
     --win: #e8a400;
+    --leaf: #2f8a3e;
     --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
     --font-mono: "Chivo Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --paper: #0c1830; --board: #10203d; --grid: #1c3358; --grid-major: #2a4a7a;
-      --ink: #e8f0ff; --ink-soft: #8ea3c7; --apple: #ff6a55; --pen: #7aa7ff; --win: #ffc93d; color-scheme: dark;
+      --ink: #e8f0ff; --ink-soft: #8ea3c7; --apple: #ff6a55; --pen: #7aa7ff; --win: #ffc93d; --leaf: #6cc77a; color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
     --paper: #0c1830; --board: #10203d; --grid: #1c3358; --grid-major: #2a4a7a;
-    --ink: #e8f0ff; --ink-soft: #8ea3c7; --apple: #ff6a55; --pen: #7aa7ff; --win: #ffc93d; color-scheme: dark;
+    --ink: #e8f0ff; --ink-soft: #8ea3c7; --apple: #ff6a55; --pen: #7aa7ff; --win: #ffc93d; --leaf: #6cc77a; color-scheme: dark;
   }
 
   body {
@@ -174,21 +175,21 @@
     <h3>Python · pandas &amp; matplotlib</h3>
     <div class="grid">
       <article class="card">
-        <svg class="glyph" data-glyph="stack" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <svg class="glyph" data-glyph="stack" data-series="25,25,28,28,28,52,60,64,61,46,37,34,29,27,26,23;345,361,363,399,347,388,375,382,334,364,356,307,378,328,377,362;427,430,427,433,401,411,402,416,392,413,419,396,430,427,444,425;597,588,603,623,618,595,619,632,626,631,641,606,654,643,658,635;1652,1662,1657,1705,1678,1617,1551,1578,1571,1502,1439,1440,1475,1424,1508,1426;1881,1890,1990,2079,2231,2351,2327,2391,2401,2414,2314,2074,2093,1860,1800,1482;1526,1540,1632,1723,1792,1914,1926,1966,1976,1871,1802,1749,1785,1828,1875,1628" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Stacked area</span>
         <h4>U.S. Greenhouse Gas Emissions by Sector</h4>
         <p>Emissions from transportation, electricity, industry and more, 1990–2020. Data from the EPA.</p>
         <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/US-CO2-Emission-Data/">Live →</a><a href="https://github.com/mentalplatypus/US-CO2-Emission-Data">Code</a></div>
       </article>
       <article class="card">
-        <svg class="glyph" data-glyph="stack" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <svg class="glyph" data-glyph="stack" data-series="0,0,0,0,0,0,0,0,0,0,0,1,1,6,15,44,105,162,247,468,476,1540,2699,4401,6626,9091,16531,20317;0,0,0,0,0,0,0,1,2,6,20,48,100,204,414,684,1327,1900,1866,2020,2745,3189,4862,5621,5985,7108,6876,5775;0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,17,15,29,51,113,199,338,508,596,821,1082,994;9,10,12,15,19,28,37,50,87,113,177,282,431,641,863,1206,1538,1374,1721,2228,2383,3962,6090,7736,8016,6149,6099,4946;0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,17,28,34,50,93,157,303,537,659,887,1218,1326;0,0,0,0,0,0,0,0,0,0,0,0,1,3,5,13,22,29,27,34,64,101,166,244,311,392,451,445;0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Stacked area</span>
         <h4>CO₂ Emissions by Continent</h4>
         <p>Annual production-based CO₂ emissions for each continent, 1750–2020.</p>
         <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/Continental-CO2-Emission-Data/">Live →</a><a href="https://github.com/mentalplatypus/Continental-CO2-Emission-Data">Code</a></div>
       </article>
       <article class="card">
-        <svg class="glyph" data-glyph="stack" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <svg class="glyph" data-glyph="stack" data-series="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,19,27,38,86,79,799,808,1494,2485,3439,8617,10668;0,0,0,0,0,0,0,1,2,6,20,47,99,199,402,663,1272,1738,1745,1875,2541,2897,4339,4808,5113,6011,5676,4713;0,0,0,0,0,0,0,0,0,0,0,1,0,2,4,12,24,35,42,52,61,111,182,292,579,979,1678,2442;0,0,0,0,0,0,0,0,0,0,0,0,2,9,17,46,59,19,95,297,414,883,1438,2125,2526,1471,1613,1577;0,0,0,0,0,0,0,0,0,0,0,0,0,2,7,19,39,74,86,153,103,233,768,945,1158,1264,1215,1031;0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,19,27,84,37,92,120,210,369,570,745;0,0,0,0,0,1,1,3,5,9,15,36,77,125,208,327,445,429,462,654,511,814,1026,1100,1052,900,833,644;0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,13,54,135,250,441,596,598;0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,5,3,45,169,208,296,518,626;0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,6,8,18,29,10,21,36,95,150,275,452,590" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Stacked area</span>
         <h4>CO₂ Emissions of the Top 10 Countries</h4>
         <p>Annual production-based CO₂ emissions of the ten largest emitters, 1750–2020.</p>
@@ -298,15 +299,25 @@
 <script>
   // Little hand-drawn charts for the portfolio cards, and the Paper Arcade picture, in the current theme's colors.
   const GLYPHS = {
-    stack: () => {
-      const tops = [[70, 66, 60, 50, 38, 24], [80, 77, 72, 64, 55, 44], [86, 84, 81, 76, 70, 63]];
-      const xs = [10, 36, 62, 88, 114, 140];
-      const area = (ys, below, cls) => {
-        const top = ys.map((y, i) => `${xs[i]},${y}`).join(" ");
-        const bottom = below.map((y, i) => `${xs[i]},${y}`).reverse().join(" ");
-        return `<polygon points="${top} ${bottom}" class="${cls}"/>`;
+    // layers come from the card's data-series: one comma-separated row per layer, bottom layer first,
+    // sampled from the chart's real data; colors run red → yellow → green → blue like matplotlib's Spectral palette
+    stack: d => {
+      const layers = d.series.split(";").map(row => row.split(",").map(Number));
+      const n = layers[0].length, x = i => 10 + i * 130 / (n - 1);
+      const totals = layers[0].map((_, i) => layers.reduce((sum, row) => sum + row[i], 0));
+      const y = v => 86 - v / Math.max(...totals) * 74;
+      const stops = ["--apple", "--win", "--leaf", "--pen"];
+      const color = t => {
+        const pos = t * (stops.length - 1), k = Math.min(Math.floor(pos), stops.length - 2);
+        return `color-mix(in srgb, var(${stops[k + 1]}) ${Math.round((pos - k) * 100)}%, var(${stops[k]}))`;
       };
-      return area(tops[0], tops[1], "f-ink") + area(tops[1], tops[2], "f-apple") + area(tops[2], xs.map(() => 86), "f-pen");
+      let base = Array(n).fill(0);
+      return layers.map((row, k) => {
+        const top = base.map((b, i) => b + row[i]);
+        const pts = top.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).concat(base.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).reverse());
+        base = top;
+        return `<polygon points="${pts.join(" ")}" style="fill:${color(k / Math.max(1, layers.length - 1))}"/>`;
+      }).join("");
     },
     line: () => {
       const series = [[[10, 60], [40, 48], [70, 56], [100, 30], [140, 38], "s-ink"], [[10, 72], [40, 66], [70, 40], [100, 52], [140, 22], "s-apple"]];
