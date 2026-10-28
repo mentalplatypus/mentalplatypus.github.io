@@ -14,7 +14,7 @@ Personal home page with ongoing projects, finished projects, and a portfolio of 
 ## Page layout
 
 1. **Header**: name, one-line intro, and buttons in this order: Resume, LinkedIn, GitHub, CodePen, Tableau Public.
-2. **Ongoing projects**: currently empty, with a dashed `<div class="next">New projects coming soon</div>` placeholder. When a project starts, add a feature card here with `<span class="status">Active</span>` and remove the placeholder.
+2. **Ongoing projects**: HoYo Version Tracker (repo `mentalplatypus/HoyoVersionTracker`), with `<span class="status">Active</span>` and a canvas drawing (`data-thumb="tracker"`: three rows of version bars and a red "now" line). New projects get a feature card here too. If the section ever empties, put back a dashed `<div class="next">New projects coming soon</div>` placeholder.
 3. **Finished projects**: Paper Arcade, with `<span class="status done">Finished</span>` (green). Move a project here when it's done. Paper Arcade's card lists its six games as tags; update them if games change.
 4. **Portfolio**: three groups: Dashboard · Tableau, Python · pandas & matplotlib, and Web charts · CodePen.
 
