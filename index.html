@@ -196,7 +196,7 @@
         <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/Top-Countries-CO2-Emission-Data/">Live →</a><a href="https://github.com/mentalplatypus/Top-Countries-CO2-Emission-Data">Code</a></div>
       </article>
       <article class="card">
-        <svg class="glyph" data-glyph="line" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <svg class="glyph" data-glyph="lines" data-series="4.03,6.59,1.48,0.14,0.94,0.51,0.26,0.17,0.33,0.3,2.57,4;0.15,0.51,3.95,5.31,0.45,0.18,0.14,0.38,0.33,0.05,0.6,0.9;2.99,0.04,1.46,0.11,0.11,0.23,0.42,0.45,0.3,1.15,0.17,5.69;0.08,0.34,1.2,0.32,0.2,0.23,0.27,0.06,,,," viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Line chart</span>
         <h4>Irvine Rainfall, 2019–2022</h4>
         <p>Total monthly rainfall in Irvine, California, one line per year.</p>
@@ -317,6 +317,22 @@
         const pts = top.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).concat(base.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).reverse());
         base = top;
         return `<polygon points="${pts.join(" ")}" style="fill:${color(k / Math.max(1, layers.length - 1))}"/>`;
+      }).join("");
+    },
+    // one line per row of the card's data-series (empty values leave a gap), in matplotlib's default
+    // color order: blue, orange, green, red
+    lines: d => {
+      const rows = d.series.split(";").map(row => row.split(",").map(v => v === "" ? null : Number(v)));
+      const n = rows[0].length, x = i => 12 + i * 126 / (n - 1);
+      const max = Math.max(...rows.flat().filter(v => v !== null));
+      const y = v => 84 - v / max * 72;
+      const colors = ["--pen", "--win", "--leaf", "--apple"];
+      return rows.map((row, k) => {
+        const c = `var(${colors[k % colors.length]})`;
+        const pts = row.map((v, i) => v === null ? null : `${x(i).toFixed(1)},${y(v).toFixed(1)}`);
+        const runs = pts.join(" ").split(/\s*null\s*/).filter(run => run.includes(" "));
+        return runs.map(run => `<polyline points="${run.trim()}" style="fill:none;stroke:${c};stroke-width:2;stroke-linejoin:round;stroke-linecap:round"/>`).join("") +
+          pts.filter(Boolean).map(p => { const [px, py] = p.split(","); return `<circle cx="${px}" cy="${py}" r="2" style="fill:${c}"/>`; }).join("");
       }).join("");
     },
     line: () => {
