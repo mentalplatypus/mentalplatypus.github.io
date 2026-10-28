@@ -18,7 +18,7 @@ Tokens `--apple`, `--pen`, `--win` and `--leaf` are chart colors for the card dr
 ## Page layout
 
 1. **Header**: name, one-line intro, and buttons in this order: Resume, LinkedIn, GitHub. (CodePen and Tableau Public buttons were removed on 2026-10-28 at David's request; those works are still linked from their portfolio cards.)
-2. **Ongoing projects**: feature cards with `<span class="status">Active</span>`. Currently: Weather Forecast (started 2026-10-27; canvas drawing `data-thumb="weather"`: a sun at top left and a rain cloud at bottom right; repo `mentalplatypus/WeatherForecast`). When the section is empty it shows a dashed `<div class="next">New projects coming soon</div>` placeholder; remove it when a project is added.
+2. **Ongoing projects**: feature cards with `<span class="status">Active</span>`. Currently: Weather Forecast (started 2026-10-27; canvas drawing `data-thumb="weather"`: a sun at top left and an outlined rain cloud with uneven slanted streaks at bottom right, modeled on a line-icon reference David supplied; repo `mentalplatypus/WeatherForecast`). When the section is empty it shows a dashed `<div class="next">New projects coming soon</div>` placeholder; remove it when a project is added.
 3. **Finished projects**, newest first, each with `<span class="status done">Finished</span>` (green): HoYo Version Tracker (finished 2026-10-28; canvas drawing `data-thumb="tracker"`: three rows of version bars and a red "now" line), then Paper Arcade. Move a project here when David says it is done. Paper Arcade's card lists its six games as tags; update them if games change.
 4. **Portfolio**: three groups: Dashboard · Tableau, Python · pandas & matplotlib, and Web charts · CodePen.
 
