@@ -1,0 +1,52 @@
+# David Wang's home page
+
+Personal home page with ongoing projects, finished projects, and a portfolio of data visualization work. It shares Paper Arcade's graph-paper style: the same design tokens, fonts, and light/dark themes.
+
+- Repository: https://github.com/mentalplatypus/mentalplatypus.github.io (public, branch **`master`**, not `main`)
+- Live site: https://mentalplatypus.github.io/ (GitHub Pages redeploys on every push to `master`)
+
+## Files
+
+- `index.html`: the whole site in one file, with no build step. Inline CSS and JS, plus Google Fonts.
+- `David-Wang-Resume.pdf`: the file behind the header's Resume button. To update the resume, replace this file under the same name with the PDF David provides, unchanged. It's public and includes his phone, email and city.
+- `README.md`: visitor-facing only (live link and a one-line description). Keep editing notes here in CLAUDE.md, never in the README.
+
+## Page layout
+
+1. **Header**: name, one-line intro, and buttons in this order: Resume, LinkedIn, GitHub, CodePen, Tableau Public.
+2. **Ongoing projects**: currently empty, with a dashed `<div class="next">New projects coming soon</div>` placeholder. When a project starts, add a feature card here with `<span class="status">Active</span>` and remove the placeholder.
+3. **Finished projects**: Paper Arcade, with `<span class="status done">Finished</span>` (green). Move a project here when it's done. Paper Arcade's card lists its six games as tags; update them if games change.
+4. **Portfolio**: three groups: Dashboard · Tableau, Python · pandas & matplotlib, and Web charts · CodePen.
+
+## Cards
+
+- **Feature cards** (`<article class="card feature">`): a wide card with a picture on the left. Used for projects and the Tableau dashboard.
+- **Grid cards** (`<article class="card">` inside `<div class="grid">`): a small card with an SVG chart drawing on top.
+- Each card's main link has `class="primary"` (Live, Play, or View dashboard). It stretches over the whole card, so clicking anywhere on the card opens it. Other links (CodePen, Code, Source, Repository) sit above it and open separately. Every card needs exactly one `a.primary`.
+- Only one link is underlined in red at a time on hover.
+
+## Card drawings (`data-glyph`)
+
+`<svg class="glyph" data-glyph="…" viewBox="0 0 150 90">` is filled in by the `GLYPHS` object in the script, using the page's theme colors.
+
+- **Data-driven:**
+  - `stack` with `data-series`: one comma-separated row per layer, bottom layer first, separated by `;`. Colors run red → yellow → green → blue (`--apple`, `--win`, `--leaf`, `--pen`), like matplotlib's Spectral palette.
+  - `lines` with `data-series`: one row per line, separated by `;`. An empty value leaves a gap. Colors follow matplotlib's default order: blue, orange, green, red.
+  - `pie` with `data-values`: slice sizes, e.g. `35,59,6`.
+- **Fixed drawings:** `line`, `bar`, `paired`, `spine`, `bubble`, `scatter`, `box`, `choropleth`.
+
+The four Python cards use data-driven drawings sampled from their repos' `data.csv` files: every second year for the U.S. sector chart, every tenth year from 1750 for the two CO₂ charts, and monthly for Irvine rainfall. If that data changes, resample it and update the attributes. The CodePen cards keep their fixed drawings by choice.
+
+## Portfolio repos
+
+Each chart lives in its own repo under `mentalplatypus` with GitHub Pages on, at `https://mentalplatypus.github.io/<repo>/`. The exception is the COVID dashboard, which is on Tableau Public. Each repo has a visitor-facing README and an About box with the same description and live link.
+
+- **CodePen charts** (branch `main`): plain HTML/SVG/canvas, D3 or Google Charts from CDNs. `WIP-Interactive-Scatterplot-Sample-Height-Weight-Data` loads `weight-height.csv` from its own repo, because its original third-party gist was deleted.
+- **Python charts** (branch `master`): `main.py` and `data.csv`, plus `chart.png` and a small `index.html` that shows it. `chart.png` was made by running the unchanged `main.py` with Python 3.10, pandas 1.4, matplotlib 3.5 and seaborn 0.12, with `plt.show()` swapped for `savefig(dpi=200, bbox_inches="tight")`. Newer matplotlib breaks these scripts (`plt.style.use("seaborn")` and the comma-joined color string). Python isn't installed on this machine; use a temporary portable copy.
+
+## Git workflow (required)
+
+- Commit each logical change as soon as it works, with a short imperative subject line and a body when the reason isn't obvious. Push right after.
+- Run `git status` and `git diff` before committing so only intended files go in.
+- Pushes go live immediately, so only push finished, working changes. Check the page in light and dark mode and at phone width (about 375px) first.
+- Never force-push or amend pushed commits; revert with a new commit instead.
