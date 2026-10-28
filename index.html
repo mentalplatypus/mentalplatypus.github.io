@@ -258,6 +258,27 @@
         <p>How height and weight relate in a sample of children.</p>
         <div class="actions"><a href="https://mentalplatypus.github.io/Simple-Scatterplot-of-Children-Heights-and-Weights/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/abBmbRy">CodePen</a><a href="https://github.com/mentalplatypus/Simple-Scatterplot-of-Children-Heights-and-Weights">Code</a></div>
       </article>
+      <article class="card">
+        <svg class="glyph" data-glyph="scatter" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Scatterplot · D3</span>
+        <h4>Gas Prices per Gallon, 2000–2020</h4>
+        <p>Yearly gas prices adjusted for inflation, built from a textbook example.</p>
+        <div class="actions"><a href="https://mentalplatypus.github.io/Scatterplot-Code-from-Textbook/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/wvgmbEx">CodePen</a><a href="https://github.com/mentalplatypus/Scatterplot-Code-from-Textbook">Code</a></div>
+      </article>
+      <article class="card">
+        <svg class="glyph" data-glyph="pie" data-values="35,59,6" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Pie chart · Google Charts</span>
+        <h4>Awareness of Driverless Vehicles</h4>
+        <p>How much U.S. adults say they have seen or heard about the effort to develop driverless vehicles.</p>
+        <div class="actions"><a href="https://mentalplatypus.github.io/SampleVis1/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/qBpPjvJ">CodePen</a><a href="https://github.com/mentalplatypus/SampleVis1">Code</a></div>
+      </article>
+      <article class="card">
+        <svg class="glyph" data-glyph="pie" data-values="12,66,22" viewBox="0 0 150 90" aria-hidden="true"></svg>
+        <span class="kind">Pie chart · Google Charts</span>
+        <h4>What People Heard About Driverless Vehicles</h4>
+        <p>Whether what people had seen or heard about driverless vehicles was mostly positive, mostly negative or a mix.</p>
+        <div class="actions"><a href="https://mentalplatypus.github.io/SampleVis2/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/eYyGEzr">CodePen</a><a href="https://github.com/mentalplatypus/SampleVis2">Code</a></div>
+      </article>
     </div>
   </section>
 
@@ -310,6 +331,19 @@
         return `<rect x="${x}" y="${y}" width="29" height="22" rx="2" class="${s}"/>`;
       }).join("");
     },
+    // slice sizes come from the card's data-values, e.g. "35,59,6"
+    pie: d => {
+      const vals = d.values.split(",").map(Number), total = vals.reduce((a, b) => a + b, 0);
+      const cx = 75, cy = 45, r = 34, cls = ["f-pen", "f-apple", "f-ink"];
+      let a = -Math.PI / 2;
+      return vals.map((v, i) => {
+        const b = a + v / total * Math.PI * 2;
+        const p = t => `${(cx + r * Math.cos(t)).toFixed(2)} ${(cy + r * Math.sin(t)).toFixed(2)}`;
+        const path = `<path d="M${cx} ${cy} L${p(a)} A${r} ${r} 0 ${b - a > Math.PI ? 1 : 0} 1 ${p(b)} Z" class="${cls[i % 3]} wedge"/>`;
+        a = b;
+        return path;
+      }).join("");
+    },
   };
 
   function draw() {
@@ -317,7 +351,7 @@
     const style = `<style>
       .f-ink{fill:${css("--ink")}} .f-apple{fill:${css("--apple")}} .f-pen{fill:${css("--pen")}} .f-board{fill:${css("--board")}}
       .s-ink,.s-apple{fill:none;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round} .s-ink{stroke:${css("--ink")}} .s-apple{stroke:${css("--apple")}}
-      .thick{stroke-width:3.5} .soft{fill-opacity:.75}
+      .thick{stroke-width:3.5} .soft{fill-opacity:.75} .wedge{stroke:${css("--board")};stroke-width:1.5}
       .a1{fill:color-mix(in srgb,${css("--pen")} 18%,${css("--board")})} .a2{fill:color-mix(in srgb,${css("--pen")} 42%,${css("--board")})}
       .a3{fill:color-mix(in srgb,${css("--pen")} 68%,${css("--board")})} .a4{fill:${css("--pen")}}
     </style>`;
@@ -325,7 +359,7 @@
     const paper = `<rect width="150" height="90" fill="${css("--board")}"/>` +
       Array.from({ length: 11 }, (_, i) => `<line x1="${i * 15}" y1="0" x2="${i * 15}" y2="90" stroke="${css("--grid")}" stroke-width="0.6"/>`).join("") +
       Array.from({ length: 7 }, (_, i) => `<line x1="0" y1="${i * 15}" x2="150" y2="${i * 15}" stroke="${css("--grid")}" stroke-width="0.6"/>`).join("");
-    document.querySelectorAll("svg[data-glyph]").forEach(svg => { svg.innerHTML = style + paper + GLYPHS[svg.dataset.glyph](); });
+    document.querySelectorAll("svg[data-glyph]").forEach(svg => { svg.innerHTML = style + paper + GLYPHS[svg.dataset.glyph](svg.dataset); });
 
     // Paper Arcade: a snake winding past a few tic-tac-toe marks and a sudoku corner on one sheet
     document.querySelectorAll('canvas[data-thumb="arcade"]').forEach(cv => {
