@@ -84,7 +84,8 @@
   .card .actions a.primary::after { content: ""; position: absolute; inset: 0; z-index: 1; }
   .card .actions a:not(.primary) { position: relative; z-index: 2; }
   .card:has(a.primary):hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--grid-major); }
-  .card:has(a.primary):hover a.primary { border-bottom-color: var(--apple); }
+  /* hovering CodePen or Code underlines only that link, not the main one too */
+  .card:has(a.primary):hover:not(:has(.actions a:not(.primary):hover)) a.primary { border-bottom-color: var(--apple); }
   .card .actions a.primary:focus-visible { outline: none; }
   .card:has(a.primary:focus-visible) { outline: 3px solid var(--apple); outline-offset: 3px; }
   @media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:has(a.primary):hover { transform: none; } }
