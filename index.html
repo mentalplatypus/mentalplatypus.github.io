@@ -79,6 +79,15 @@
   .card .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: auto; padding-top: 4px; font-size: 0.82rem; font-weight: 600; }
   .card .actions a { text-decoration: none; border-bottom: 2px solid var(--grid-major); }
   .card .actions a:hover { border-bottom-color: var(--apple); }
+  /* the main link (Live, Play, View dashboard) stretches over the whole card; the other links sit above it */
+  .card { position: relative; transition: transform 0.12s, box-shadow 0.12s; }
+  .card .actions a.primary::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+  .card .actions a:not(.primary) { position: relative; z-index: 2; }
+  .card:has(a.primary):hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--grid-major); }
+  .card:has(a.primary):hover a.primary { border-bottom-color: var(--apple); }
+  .card .actions a.primary:focus-visible { outline: none; }
+  .card:has(a.primary:focus-visible) { outline: 3px solid var(--apple); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:has(a.primary):hover { transform: none; } }
 
   /* ongoing projects: wide cards with a picture beside the text */
   .feature { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 22px; align-items: start; }
@@ -135,7 +144,7 @@
           <li>Snake</li><li>Tic-Tac-Toe</li><li>Minesweeper</li><li>Ruler Merge</li><li>Sudoku</li><li>Dots &amp; Boxes</li>
         </ul>
         <div class="actions">
-          <a href="https://mentalplatypus.github.io/PaperArcadeGames/">Play →</a>
+          <a class="primary" href="https://mentalplatypus.github.io/PaperArcadeGames/">Play →</a>
           <a href="https://github.com/mentalplatypus/PaperArcadeGames">Source</a>
         </div>
       </div>
@@ -155,7 +164,7 @@
         <h4>COVID-19 Dashboard</h4>
         <p>An interactive Tableau dashboard of COVID-19 data, published on Tableau Public.</p>
         <div class="actions">
-          <a href="https://public.tableau.com/views/InteractiveCOVID-19Dashboard/InteractiveDashboard">View dashboard →</a>
+          <a class="primary" href="https://public.tableau.com/views/InteractiveCOVID-19Dashboard/InteractiveDashboard">View dashboard →</a>
           <a href="https://github.com/mentalplatypus/Interactive-COVID19-Dashboard">Repository</a>
         </div>
       </div>
@@ -168,28 +177,28 @@
         <span class="kind">Stacked area</span>
         <h4>U.S. Greenhouse Gas Emissions by Sector</h4>
         <p>Emissions from transportation, electricity, industry and more, 1990–2020. Data from the EPA.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/US-CO2-Emission-Data/">Live →</a><a href="https://github.com/mentalplatypus/US-CO2-Emission-Data">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/US-CO2-Emission-Data/">Live →</a><a href="https://github.com/mentalplatypus/US-CO2-Emission-Data">Code</a></div>
       </article>
       <article class="card">
         <svg class="glyph" data-glyph="stack" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Stacked area</span>
         <h4>CO₂ Emissions by Continent</h4>
         <p>Annual production-based CO₂ emissions for each continent, 1750–2020.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/Continental-CO2-Emission-Data/">Live →</a><a href="https://github.com/mentalplatypus/Continental-CO2-Emission-Data">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/Continental-CO2-Emission-Data/">Live →</a><a href="https://github.com/mentalplatypus/Continental-CO2-Emission-Data">Code</a></div>
       </article>
       <article class="card">
         <svg class="glyph" data-glyph="stack" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Stacked area</span>
         <h4>CO₂ Emissions of the Top 10 Countries</h4>
         <p>Annual production-based CO₂ emissions of the ten largest emitters, 1750–2020.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/Top-Countries-CO2-Emission-Data/">Live →</a><a href="https://github.com/mentalplatypus/Top-Countries-CO2-Emission-Data">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/Top-Countries-CO2-Emission-Data/">Live →</a><a href="https://github.com/mentalplatypus/Top-Countries-CO2-Emission-Data">Code</a></div>
       </article>
       <article class="card">
         <svg class="glyph" data-glyph="line" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Line chart</span>
         <h4>Irvine Rainfall, 2019–2022</h4>
         <p>Total monthly rainfall in Irvine, California, one line per year.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/Irvine-Rainfall-Data/">Live →</a><a href="https://github.com/mentalplatypus/Irvine-Rainfall-Data">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/Irvine-Rainfall-Data/">Live →</a><a href="https://github.com/mentalplatypus/Irvine-Rainfall-Data">Code</a></div>
       </article>
     </div>
 
@@ -200,84 +209,84 @@
         <span class="kind">Interactive bar chart · D3</span>
         <h4>Most Expensive CS:GO Skins</h4>
         <p>A sortable bar chart of the priciest weapon skins.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/Simple-Interactive-Bar-Chart-Most-Expensive-CSGO-Skins/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/WNRJBmg">CodePen</a><a href="https://github.com/mentalplatypus/Simple-Interactive-Bar-Chart-Most-Expensive-CSGO-Skins">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/Simple-Interactive-Bar-Chart-Most-Expensive-CSGO-Skins/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/WNRJBmg">CodePen</a><a href="https://github.com/mentalplatypus/Simple-Interactive-Bar-Chart-Most-Expensive-CSGO-Skins">Code</a></div>
       </article>
       <article class="card">
         <svg class="glyph" data-glyph="choropleth" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Choropleth map</span>
         <h4>Median Household Income, 2018</h4>
         <p>A map shaded by median household income.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/Basic-Choropleth-Map-Median-Household-Income-2018/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/rNjwWMv">CodePen</a><a href="https://github.com/mentalplatypus/Basic-Choropleth-Map-Median-Household-Income-2018">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/Basic-Choropleth-Map-Median-Household-Income-2018/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/rNjwWMv">CodePen</a><a href="https://github.com/mentalplatypus/Basic-Choropleth-Map-Median-Household-Income-2018">Code</a></div>
       </article>
       <article class="card">
         <svg class="glyph" data-glyph="spine" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Spine chart</span>
         <h4>Population Pyramid of India, 2021</h4>
         <p>Male and female population by age group, back to back.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/Deviation-Spine-Chart-Population-Pyramid-of-India-2021/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/RwKXojw">CodePen</a><a href="https://github.com/mentalplatypus/Deviation-Spine-Chart-Population-Pyramid-of-India-2021">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/Deviation-Spine-Chart-Population-Pyramid-of-India-2021/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/RwKXojw">CodePen</a><a href="https://github.com/mentalplatypus/Deviation-Spine-Chart-Population-Pyramid-of-India-2021">Code</a></div>
       </article>
       <article class="card">
         <svg class="glyph" data-glyph="bubble" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Bubble chart</span>
         <h4>Popular NBA Players</h4>
         <p>Field goal percentage, points per game and salary for popular players in the 2020–21 season.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/Bubblechart-of-Popular-NBA-Players/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/XWNNMbM">CodePen</a><a href="https://github.com/mentalplatypus/Bubblechart-of-Popular-NBA-Players">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/Bubblechart-of-Popular-NBA-Players/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/XWNNMbM">CodePen</a><a href="https://github.com/mentalplatypus/Bubblechart-of-Popular-NBA-Players">Code</a></div>
       </article>
       <article class="card">
         <svg class="glyph" data-glyph="paired" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Paired column chart</span>
         <h4>U.S. Summer Olympic Medals</h4>
         <p>Gold, silver and bronze medals won by the U.S. at each Summer Games from 2000 to 2016.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/Paired-Bar-Graph-of-U.S.-Summer-Olympic-Medals/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/poNQPmM">CodePen</a><a href="https://github.com/mentalplatypus/Paired-Bar-Graph-of-U.S.-Summer-Olympic-Medals">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/Paired-Bar-Graph-of-U.S.-Summer-Olympic-Medals/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/poNQPmM">CodePen</a><a href="https://github.com/mentalplatypus/Paired-Bar-Graph-of-U.S.-Summer-Olympic-Medals">Code</a></div>
       </article>
       <article class="card">
         <svg class="glyph" data-glyph="line" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Line chart</span>
         <h4>U.S. Inflation, 1960–1990</h4>
         <p>Annual inflation rates over three decades.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/Line-Graph-of-US-Inflation-Rates-from-1960-1990/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/yLVQgzO">CodePen</a><a href="https://github.com/mentalplatypus/Line-Graph-of-US-Inflation-Rates-from-1960-1990">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/Line-Graph-of-US-Inflation-Rates-from-1960-1990/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/yLVQgzO">CodePen</a><a href="https://github.com/mentalplatypus/Line-Graph-of-US-Inflation-Rates-from-1960-1990">Code</a></div>
       </article>
       <article class="card">
         <svg class="glyph" data-glyph="box" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Boxplot</span>
         <h4>Math Quiz Scores</h4>
         <p>The spread of scores across a set of sample quizzes.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/Boxplot-of-Sample-Math-Quiz-Scores/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/VwmVbXb">CodePen</a><a href="https://github.com/mentalplatypus/Boxplot-of-Sample-Math-Quiz-Scores">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/Boxplot-of-Sample-Math-Quiz-Scores/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/VwmVbXb">CodePen</a><a href="https://github.com/mentalplatypus/Boxplot-of-Sample-Math-Quiz-Scores">Code</a></div>
       </article>
       <article class="card">
         <svg class="glyph" data-glyph="scatter" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Interactive scatterplot</span>
         <h4>Heights and Weights</h4>
         <p>10,000 people's heights and weights, colored by gender. Hover over a dot to highlight that group.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/WIP-Interactive-Scatterplot-Sample-Height-Weight-Data/">Live →</a><a href="https://github.com/mentalplatypus/WIP-Interactive-Scatterplot-Sample-Height-Weight-Data">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/WIP-Interactive-Scatterplot-Sample-Height-Weight-Data/">Live →</a><a href="https://github.com/mentalplatypus/WIP-Interactive-Scatterplot-Sample-Height-Weight-Data">Code</a></div>
       </article>
       <article class="card">
         <svg class="glyph" data-glyph="scatter" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Scatterplot</span>
         <h4>Children's Heights and Weights</h4>
         <p>How height and weight relate in a sample of children.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/Simple-Scatterplot-of-Children-Heights-and-Weights/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/abBmbRy">CodePen</a><a href="https://github.com/mentalplatypus/Simple-Scatterplot-of-Children-Heights-and-Weights">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/Simple-Scatterplot-of-Children-Heights-and-Weights/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/abBmbRy">CodePen</a><a href="https://github.com/mentalplatypus/Simple-Scatterplot-of-Children-Heights-and-Weights">Code</a></div>
       </article>
       <article class="card">
         <svg class="glyph" data-glyph="scatter" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Scatterplot · D3</span>
         <h4>Gas Prices per Gallon, 2000–2020</h4>
         <p>Yearly gas prices adjusted for inflation, built from a textbook example.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/Scatterplot-Code-from-Textbook/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/wvgmbEx">CodePen</a><a href="https://github.com/mentalplatypus/Scatterplot-Code-from-Textbook">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/Scatterplot-Code-from-Textbook/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/wvgmbEx">CodePen</a><a href="https://github.com/mentalplatypus/Scatterplot-Code-from-Textbook">Code</a></div>
       </article>
       <article class="card">
         <svg class="glyph" data-glyph="pie" data-values="35,59,6" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Pie chart · Google Charts</span>
         <h4>Awareness of Driverless Vehicles</h4>
         <p>How much U.S. adults say they have seen or heard about the effort to develop driverless vehicles.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/SampleVis1/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/qBpPjvJ">CodePen</a><a href="https://github.com/mentalplatypus/SampleVis1">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/SampleVis1/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/qBpPjvJ">CodePen</a><a href="https://github.com/mentalplatypus/SampleVis1">Code</a></div>
       </article>
       <article class="card">
         <svg class="glyph" data-glyph="pie" data-values="12,66,22" viewBox="0 0 150 90" aria-hidden="true"></svg>
         <span class="kind">Pie chart · Google Charts</span>
         <h4>What People Heard About Driverless Vehicles</h4>
         <p>Whether what people had seen or heard about driverless vehicles was mostly positive, mostly negative or a mix.</p>
-        <div class="actions"><a href="https://mentalplatypus.github.io/SampleVis2/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/eYyGEzr">CodePen</a><a href="https://github.com/mentalplatypus/SampleVis2">Code</a></div>
+        <div class="actions"><a class="primary" href="https://mentalplatypus.github.io/SampleVis2/">Live →</a><a href="https://codepen.io/mentalplatypus/pen/eYyGEzr">CodePen</a><a href="https://github.com/mentalplatypus/SampleVis2">Code</a></div>
       </article>
     </div>
   </section>
