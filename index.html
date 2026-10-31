@@ -183,7 +183,21 @@
   <section aria-labelledby="ongoing">
     <h2 id="ongoing">Ongoing projects</h2>
 
-    <div class="next">New projects coming soon</div>
+    <article class="card feature">
+      <canvas data-thumb="endfield" width="440" height="440" aria-hidden="true"></canvas>
+      <div class="body">
+        <span class="status">Active</span>
+        <h4>Endfield Tracker</h4>
+        <p>Everything happening in Arknights: Endfield on one page, without opening the game: the current version and a countdown to the next, events running now, headhunting banners, endgame seasons, livestreams and a calendar of every time-limited activity. A scheduled GitHub Action reads the official update notes every three hours.</p>
+        <ul class="tags" aria-label="Built with">
+          <li>Arknights: Endfield</li><li>GitHub Actions</li><li>JavaScript</li>
+        </ul>
+        <div class="actions">
+          <a class="primary" href="https://mentalplatypus.github.io/EndfieldTracker/">Live →</a>
+          <a href="https://github.com/mentalplatypus/EndfieldTracker">Source</a>
+        </div>
+      </div>
+    </article>
   </section>
 
   <section aria-labelledby="finished">
@@ -530,6 +544,32 @@
       });
       ctx.strokeStyle = css("--apple"); ctx.lineWidth = 5;
       ctx.beginPath(); ctx.moveTo(now * c, 1.2 * c); ctx.lineTo(now * c, 8.8 * c); ctx.stroke();
+    });
+
+    // Endfield Tracker: a calendar of staggered activity bars in the four kind colors, a content-update diamond and a red "now" line
+    document.querySelectorAll('canvas[data-thumb="endfield"]').forEach(cv => {
+      const ctx = cv.getContext("2d"), W = cv.width, c = W / 10;
+      ctx.fillStyle = css("--board"); ctx.fillRect(0, 0, W, W);
+      ctx.strokeStyle = css("--grid"); ctx.lineWidth = 1.5;
+      for (let i = 2; i < 10; i += 2) { ctx.beginPath(); ctx.moveTo(i * c, 0.8 * c); ctx.lineTo(i * c, 9.2 * c); ctx.stroke(); }
+      const now = 5.4;
+      const bars = [["--pen", 1, 6.6], ["--pen", 3.4, 8.8], ["--pen", 5.8, 9.2], ["--win", 0.8, 6], ["--win", 6, 9.2, true], ["--apple", 2.6, 7.8], ["--leaf", 0.8, 6], ["--leaf", 6, 9.2, true]];
+      bars.forEach(([color, x0, x1, later], r) => {
+        const y = (1.2 + r * 0.98) * c, h = c * 0.6;
+        ctx.beginPath(); ctx.roundRect(x0 * c, y, (x1 - x0) * c, h, 6);
+        if (later) {
+          ctx.fillStyle = css(color); ctx.globalAlpha = 0.3; ctx.fill(); ctx.globalAlpha = 1;
+          ctx.strokeStyle = css(color); ctx.lineWidth = 2.5; ctx.setLineDash([9, 6]); ctx.stroke(); ctx.setLineDash([]);
+        } else {
+          ctx.fillStyle = css(color); ctx.globalAlpha = 0.9; ctx.fill(); ctx.globalAlpha = 1;
+        }
+      });
+      // a content update partway through the second event
+      const dx = 7.2 * c, dy = (1.2 + 0.98 + 0.3) * c, d = c * 0.36;
+      ctx.fillStyle = css("--ink"); ctx.strokeStyle = css("--board"); ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(dx, dy - d); ctx.lineTo(dx + d, dy); ctx.lineTo(dx, dy + d); ctx.lineTo(dx - d, dy); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = css("--apple"); ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.moveTo(now * c, 0.8 * c); ctx.lineTo(now * c, 9.2 * c); ctx.stroke();
     });
 
     // Weather Forecast: a sun at top left and a rain cloud at bottom right
