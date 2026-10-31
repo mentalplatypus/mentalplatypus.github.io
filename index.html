@@ -65,6 +65,11 @@
     font-family: var(--font-display); font-weight: 800; font-size: clamp(2.4rem, 8vw, 4.2rem);
     letter-spacing: -0.04em; line-height: 0.95; margin: 0; overflow-wrap: anywhere;
   }
+  /* the name plays one of three hover animations (script at the end); the letters move with transforms only, so the
+     name's box stays put under the pointer */
+  h1 .name { display: inline-block; cursor: default; }
+  h1 .name span { display: inline-block; transform-origin: 50% 100%; }
+  .bits { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 20; pointer-events: none; }
   .lede { margin: 14px 0 0; color: var(--ink-soft); font-size: 1rem; line-height: 1.6; max-width: 56ch; }
   .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 0; padding: 0; list-style: none; }
   .links a {
@@ -171,7 +176,14 @@
 
 <div class="wrap">
   <header>
-    <h1>David Wang</h1>
+    <h1><span class="name">David Wang</span></h1>
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <filter id="ghost" x="-30%" y="-60%" width="160%" height="220%">
+        <feTurbulence id="ghost-turb" type="fractalNoise" baseFrequency="0.018 0.06" numOctaves="2" seed="3" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G" id="ghost-disp" result="wavy"/>
+        <feGaussianBlur in="wavy" stdDeviation="0" id="ghost-blur"/>
+      </filter>
+    </svg>
     <p class="lede">Things I'm building now, and data visualization work from before.</p>
     <ul class="links">
       <li><a href="David-Wang-Resume.pdf">Resume</a></li>
@@ -392,6 +404,184 @@
 
   <footer>Hosted on GitHub Pages.</footer>
 </div>
+
+<script>
+  // Hovering the name plays one of three animations at random (a third each), reversed when the pointer leaves:
+  // cubes: it breaks into blocks that bounce around the window, then rewinds them into place;
+  // zip: each letter in turn crouches and shoots up off the screen, then drops back with a squash;
+  // ghost: it wavers and fades away like a cartoon ghost, then wavers back.
+  // Hovering again while one is reversing picks that one back up instead of starting another. On touch screens a tap
+  // plays one and it reverses by itself. Off for reduced motion.
+  (() => {
+    const h1 = document.querySelector("h1"), name = h1.querySelector(".name");
+    if (!name || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const text = name.textContent;
+    h1.setAttribute("aria-label", text);
+    name.setAttribute("aria-hidden", "true");
+    name.innerHTML = [...text].map(ch => (ch === " " ? " " : `<span>${ch}</span>`)).join("");
+    const letters = [...name.querySelectorAll("span")];
+    const rand = (a, b) => a + Math.random() * (b - a);
+    let anim = null, touchTimer = 0;
+
+    function cubes() {
+      const STEP = 1 / 60, MAX = 300, G = 1800;
+      const rect0 = name.getBoundingClientRect(), color = getComputedStyle(h1).color;
+      // draw the letters where they sit and keep one cube per grid cell the glyphs cover
+      const cs = getComputedStyle(letters[0]), c = Math.max(5, Math.round(parseFloat(cs.fontSize) / 9));
+      const off = document.createElement("canvas"), ox = off.getContext("2d");
+      off.width = Math.ceil(rect0.width) + 2 * c; off.height = Math.ceil(rect0.height) + 2 * c;
+      ox.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      const m = ox.measureText("Hg"), asc = m.fontBoundingBoxAscent, desc = m.fontBoundingBoxDescent;
+      for (const el of letters) {
+        const r = el.getBoundingClientRect(), base = r.top + (r.height - asc - desc) / 2 + asc;
+        ox.fillText(el.textContent, r.left - rect0.left + c, base - rect0.top + c);
+      }
+      const px = ox.getImageData(0, 0, off.width, off.height).data, home = [];
+      for (let y = c / 2; y < off.height; y += c)
+        for (let x = c / 2; x < off.width; x += c)
+          if (px[(Math.floor(y) * off.width + Math.floor(x)) * 4 + 3] > 110) home.push(x + rect0.left - c, y + rect0.top - c);
+      // each frame holds x, y, angle, and their speeds for every cube, so the flight can be played backwards exactly
+      const n = home.length / 2, cx = rect0.left + rect0.width / 2, first = new Float32Array(n * 6);
+      for (let i = 0; i < n; i++) {
+        const x = home[2 * i], y = home[2 * i + 1];
+        first.set([x, y, 0, (x - cx) * 2.5 + rand(-250, 250), rand(-1100, -400), rand(-12, 12)], i * 6);
+      }
+      const frames = [first];
+      const cv = document.createElement("canvas"), ctx = cv.getContext("2d");
+      cv.className = "bits"; cv.setAttribute("aria-hidden", "true");
+      document.body.appendChild(cv);
+      const fit = () => { const d = devicePixelRatio || 1; cv.width = innerWidth * d; cv.height = innerHeight * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
+      fit(); addEventListener("resize", fit);
+      letters.forEach(el => (el.style.opacity = "0"));
+
+      function step(s) {
+        const W = innerWidth, H = innerHeight, h = c / 2, f = s.slice();
+        for (let i = 0; i < f.length; i += 6) {
+          let x = f[i], y = f[i + 1], vx = f[i + 3], vy = f[i + 4], va = f[i + 5];
+          vy += G * STEP; x += vx * STEP; y += vy * STEP;
+          if (y > H - h) { y = H - h; vy = Math.abs(vy) < 60 ? 0 : -vy * 0.55; vx *= 0.8; va *= 0.6; }
+          if (y < h) { y = h; vy = -vy * 0.6; }
+          if (x < h) { x = h; vx = -vx * 0.7; } else if (x > W - h) { x = W - h; vx = -vx * 0.7; }
+          f[i] = x; f[i + 1] = y; f[i + 2] += va * STEP; f[i + 3] = vx; f[i + 4] = vy; f[i + 5] = va;
+        }
+        return f;
+      }
+      function draw(f, dx, dy) {
+        const s = c * 0.9, e = s * 0.22;
+        ctx.clearRect(0, 0, innerWidth, innerHeight);
+        for (let i = 0; i < f.length; i += 6) {
+          ctx.save(); ctx.translate(f[i] + dx, f[i + 1] + dy); ctx.rotate(f[i + 2]);
+          ctx.fillStyle = color; ctx.fillRect(-s / 2, -s / 2, s, s);
+          // a shaded bottom and right edge so each block reads as a cube
+          ctx.fillStyle = "rgba(0, 0, 0, 0.3)"; ctx.fillRect(-s / 2, s / 2 - e, s, e); ctx.fillRect(s / 2 - e, -s / 2, e, s - e);
+          ctx.restore();
+        }
+      }
+      let dir = 1, idx = 0, from = 0, raf = 0, last = 0, acc = 0;
+      function tick(t) {
+        acc += last ? Math.min(0.05, (t - last) / 1000) : STEP;
+        last = t;
+        const k = Math.floor(acc / STEP);
+        acc -= k * STEP;
+        if (dir > 0) {
+          for (let j = 0; j < k && frames.length < MAX; j++) frames.push(step(frames[frames.length - 1]));
+          idx = frames.length - 1;
+          draw(frames[idx], 0, 0);
+          raf = frames.length < MAX ? requestAnimationFrame(tick) : 0;
+        } else {
+          // rewind in at most about a second, ending wherever the name is now if the page has scrolled
+          idx = Math.max(0, idx - k * Math.max(1, from / 60));
+          const r = name.getBoundingClientRect(), p = from ? 1 - idx / from : 1;
+          draw(frames[Math.round(idx)], (r.left - rect0.left) * p, (r.top - rect0.top) * p);
+          if (idx > 0) raf = requestAnimationFrame(tick);
+          else { cv.remove(); removeEventListener("resize", fit); letters.forEach(el => (el.style.opacity = "")); anim = null; }
+        }
+      }
+      const run = () => { cancelAnimationFrame(raf); last = 0; acc = 0; raf = requestAnimationFrame(tick); };
+      run();
+      return {
+        forward() { dir = 1; frames.length = Math.round(idx) + 1; run(); },
+        back() { dir = -1; from = idx; run(); },
+      };
+    }
+
+    function zip() {
+      const GAP = 55, REST = "matrix(1, 0, 0, 1, 0, 0)";
+      let token = 0;
+      // where each letter is right now, so a reversal mid-way starts from there
+      const grab = () => {
+        const cur = letters.map(el => { const t = getComputedStyle(el).transform; return t === "none" ? REST : t; });
+        letters.forEach(el => el.getAnimations().forEach(a => a.cancel()));
+        return cur;
+      };
+      function forward() {
+        token++;
+        const cur = grab(), up = `translateY(${-(name.getBoundingClientRect().bottom + 80)}px) scale(0.8, 1.5)`;
+        letters.forEach((el, i) => {
+          const rest = cur[i] === REST;
+          el.animate(rest
+            ? [{ transform: "none", easing: "ease-out" },
+               { transform: "translateY(6%) scale(1.12, 0.8)", offset: 0.22, easing: "cubic-bezier(.5, 0, 1, .5)" },
+               { transform: up }]
+            : [{ transform: cur[i], easing: "cubic-bezier(.5, 0, 1, .5)" }, { transform: up }],
+            { duration: rest ? 520 : 380, delay: i * GAP, fill: "both" });
+        });
+      }
+      function back() {
+        const my = ++token, cur = grab();
+        let k = 0;
+        const drops = letters.map((el, i) => cur[i] === REST ? null : el.animate([
+          { transform: cur[i], easing: "cubic-bezier(.55, 0, 1, .45)" },
+          { transform: "translateY(0) scale(1, 1)", offset: 0.55, easing: "ease-out" },
+          { transform: "translateY(0) scale(1.3, 0.62)", offset: 0.68, easing: "ease-in-out" },
+          { transform: "translateY(0) scale(0.94, 1.08)", offset: 0.84, easing: "ease-in-out" },
+          { transform: "translateY(0) scale(1, 1)" },
+        ], { duration: 720, delay: k++ * GAP, fill: "backwards" })).filter(Boolean);
+        Promise.all(drops.map(a => a.finished)).then(() => { if (my === token) anim = null; }, () => {});
+      }
+      forward();
+      return { forward, back };
+    }
+
+    function ghost() {
+      const turb = document.getElementById("ghost-turb"), disp = document.getElementById("ghost-disp"), blur = document.getElementById("ghost-blur");
+      const ease = x => x * x * (3 - 2 * x);
+      let p = 0, dir = 1, raf = 0, last = 0;
+      name.style.filter = "url(#ghost)";
+      function tick(t) {
+        const dt = last ? Math.min(0.05, (t - last) / 1000) : 0, s = t / 1000;
+        last = t;
+        p = Math.min(1, Math.max(0, p + (dir * dt) / 1.2));
+        const e = ease(p);
+        // the noise drifts so the edges keep wobbling while it fades, rises and stretches
+        turb.setAttribute("baseFrequency", `${(0.018 + 0.006 * Math.sin(s * 3)).toFixed(4)} ${(0.06 + 0.02 * Math.sin(s * 2.3)).toFixed(4)}`);
+        disp.setAttribute("scale", (e * 38).toFixed(1));
+        blur.setAttribute("stdDeviation", (e * 2.5).toFixed(2));
+        name.style.opacity = String(1 - e);
+        letters.forEach((el, i) => {
+          el.style.transform = `translate(${(Math.sin(s * 5 + i * 0.9) * e * 5).toFixed(2)}px, ${(-e * 16 + Math.sin(s * 4 + i * 1.3) * e * 6).toFixed(2)}px) scaleY(${(1 + e * 0.2).toFixed(3)})`;
+        });
+        if (dir < 0 && p === 0) {
+          name.style.filter = name.style.opacity = "";
+          letters.forEach(el => (el.style.transform = ""));
+          anim = null; raf = 0;
+        } else raf = dir > 0 && p === 1 ? 0 : requestAnimationFrame(tick); // fully gone: nothing to draw
+      }
+      const run = () => { cancelAnimationFrame(raf); last = 0; raf = requestAnimationFrame(tick); };
+      run();
+      return { forward() { dir = 1; name.style.filter = "url(#ghost)"; run(); }, back() { dir = -1; run(); } };
+    }
+
+    const KINDS = [cubes, zip, ghost];
+    name.addEventListener("pointerenter", e => {
+      if (anim) anim.forward();
+      else anim = KINDS[Math.floor(Math.random() * KINDS.length)]();
+      clearTimeout(touchTimer);
+      if (e.pointerType === "touch") touchTimer = setTimeout(() => anim && anim.back(), 2200);
+    });
+    name.addEventListener("pointerleave", e => { if (e.pointerType !== "touch" && anim) anim.back(); });
+  })();
+</script>
 
 <script>
   // Little hand-drawn charts for the portfolio cards, and the Paper Arcade picture, in the current theme's colors.
