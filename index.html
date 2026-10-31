@@ -67,9 +67,8 @@
   }
   /* the name plays one of three hover animations (script at the end); the letters move with transforms only, so the
      name's box stays put under the pointer */
-  h1 .name { display: inline-block; cursor: default; }
+  h1 .name { display: inline-block; cursor: default; position: relative; z-index: 20; } /* letters fly over the cards */
   h1 .name span { display: inline-block; transform-origin: 50% 100%; }
-  .bits { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 20; pointer-events: none; }
   .lede { margin: 14px 0 0; color: var(--ink-soft); font-size: 1rem; line-height: 1.6; max-width: 56ch; }
   .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 0; padding: 0; list-style: none; }
   .links a {
@@ -406,10 +405,13 @@
 </div>
 
 <script>
-  // Hovering the name plays one of three animations at random (a third each), reversed when the pointer leaves:
-  // cubes: it breaks into blocks that bounce around the window, then rewinds them into place;
+  // Hovering the name plays one of four animations at random, never the same one twice in a row, reversed when the
+  // pointer leaves:
+  // tumble: the letters break apart and bounce around the window, then the flight rewinds them into place;
   // zip: each letter in turn crouches and shoots up off the screen, then drops back with a squash;
-  // ghost: it wavers and fades away like a cartoon ghost, then wavers back.
+  // ghost: it wavers and fades away like a cartoon ghost, then wavers back;
+  // flip: the letters flip over one by one like a departures board, showing accent-coloured backs, then flip back.
+  // All of them only move the nine letters (transforms), which keeps them smooth.
   // Hovering again while one is reversing picks that one back up instead of starting another. On touch screens a tap
   // plays one and it reverses by itself. Off for reduced motion.
   (() => {
@@ -423,60 +425,38 @@
     const rand = (a, b) => a + Math.random() * (b - a);
     let anim = null, touchTimer = 0;
 
-    function cubes() {
+    function tumble() {
       const STEP = 1 / 60, MAX = 300, G = 1800;
-      const rect0 = name.getBoundingClientRect(), color = getComputedStyle(h1).color;
-      // draw the letters where they sit and keep one cube per grid cell the glyphs cover
-      const cs = getComputedStyle(letters[0]), c = Math.max(5, Math.round(parseFloat(cs.fontSize) / 9));
-      const off = document.createElement("canvas"), ox = off.getContext("2d");
-      off.width = Math.ceil(rect0.width) + 2 * c; off.height = Math.ceil(rect0.height) + 2 * c;
-      ox.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-      const m = ox.measureText("Hg"), asc = m.fontBoundingBoxAscent, desc = m.fontBoundingBoxDescent;
-      for (const el of letters) {
-        const r = el.getBoundingClientRect(), base = r.top + (r.height - asc - desc) / 2 + asc;
-        ox.fillText(el.textContent, r.left - rect0.left + c, base - rect0.top + c);
-      }
-      const px = ox.getImageData(0, 0, off.width, off.height).data, home = [];
-      for (let y = c / 2; y < off.height; y += c)
-        for (let x = c / 2; x < off.width; x += c)
-          if (px[(Math.floor(y) * off.width + Math.floor(x)) * 4 + 3] > 110) home.push(x + rect0.left - c, y + rect0.top - c);
-      // each frame holds x, y, angle, and their speeds for every cube, so the flight can be played backwards exactly
-      const n = home.length / 2, cx = rect0.left + rect0.width / 2, first = new Float32Array(n * 6);
-      for (let i = 0; i < n; i++) {
-        const x = home[2 * i], y = home[2 * i + 1];
-        first.set([x, y, 0, (x - cx) * 2.5 + rand(-250, 250), rand(-1100, -400), rand(-12, 12)], i * 6);
-      }
+      const n0 = name.getBoundingClientRect(), cx = n0.left + n0.width / 2;
+      // each letter's centre and half size within the name's box, which stays put while the letters fly
+      const box = letters.map(el => {
+        const r = el.getBoundingClientRect();
+        return { x: r.left - n0.left + r.width / 2, y: r.top - n0.top + r.height / 2, w: r.width / 2, h: r.height / 2 };
+      });
+      // each frame holds every letter's offset from home, angle, and their speeds, so the flight can be played backwards exactly
+      const first = new Float32Array(letters.length * 6);
+      box.forEach((b, i) => first.set([0, 0, 0, (n0.left + b.x - cx) * 4 + rand(-200, 200), rand(-1000, -500), rand(-8, 8)], i * 6));
       const frames = [first];
-      const cv = document.createElement("canvas"), ctx = cv.getContext("2d");
-      cv.className = "bits"; cv.setAttribute("aria-hidden", "true");
-      document.body.appendChild(cv);
-      const fit = () => { const d = devicePixelRatio || 1; cv.width = innerWidth * d; cv.height = innerHeight * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
-      fit(); addEventListener("resize", fit);
-      letters.forEach(el => (el.style.opacity = "0"));
+      letters.forEach(el => (el.style.transformOrigin = "50% 50%"));
 
-      function step(s) {
-        const W = innerWidth, H = innerHeight, h = c / 2, f = s.slice();
-        for (let i = 0; i < f.length; i += 6) {
-          let x = f[i], y = f[i + 1], vx = f[i + 3], vy = f[i + 4], va = f[i + 5];
+      // gravity, bouncing off the window edges; the edges are measured on the turned letter's bounding box
+      function step(prev) {
+        const n = name.getBoundingClientRect(), W = document.documentElement.clientWidth, H = innerHeight, f = prev.slice();
+        for (let i = 0, j = 0; i < f.length; i += 6, j++) {
+          const b = box[j], c = Math.abs(Math.cos(f[i + 2])), sn = Math.abs(Math.sin(f[i + 2]));
+          const ex = b.w * c + b.h * sn, ey = b.w * sn + b.h * c, hx = n.left + b.x, hy = n.top + b.y;
+          let x = hx + f[i], y = hy + f[i + 1], vx = f[i + 3], vy = f[i + 4], va = f[i + 5];
           vy += G * STEP; x += vx * STEP; y += vy * STEP;
-          if (y > H - h) { y = H - h; vy = Math.abs(vy) < 60 ? 0 : -vy * 0.55; vx *= 0.8; va *= 0.6; }
-          if (y < h) { y = h; vy = -vy * 0.6; }
-          if (x < h) { x = h; vx = -vx * 0.7; } else if (x > W - h) { x = W - h; vx = -vx * 0.7; }
-          f[i] = x; f[i + 1] = y; f[i + 2] += va * STEP; f[i + 3] = vx; f[i + 4] = vy; f[i + 5] = va;
+          if (y > H - ey) { y = H - ey; vy = Math.abs(vy) < 60 ? 0 : -vy * 0.55; vx *= 0.8; va *= 0.7; }
+          if (y < ey) { y = ey; vy = -vy * 0.6; }
+          if (x < ex) { x = ex; vx = -vx * 0.7; va = -va; } else if (x > W - ex) { x = W - ex; vx = -vx * 0.7; va = -va; }
+          f[i] = x - hx; f[i + 1] = y - hy; f[i + 2] += va * STEP; f[i + 3] = vx; f[i + 4] = vy; f[i + 5] = va;
         }
         return f;
       }
-      function draw(f, dx, dy) {
-        const s = c * 0.9, e = s * 0.22;
-        ctx.clearRect(0, 0, innerWidth, innerHeight);
-        for (let i = 0; i < f.length; i += 6) {
-          ctx.save(); ctx.translate(f[i] + dx, f[i + 1] + dy); ctx.rotate(f[i + 2]);
-          ctx.fillStyle = color; ctx.fillRect(-s / 2, -s / 2, s, s);
-          // a shaded bottom and right edge so each block reads as a cube
-          ctx.fillStyle = "rgba(0, 0, 0, 0.3)"; ctx.fillRect(-s / 2, s / 2 - e, s, e); ctx.fillRect(s / 2 - e, -s / 2, e, s - e);
-          ctx.restore();
-        }
-      }
+      const show = f => letters.forEach((el, j) => {
+        el.style.transform = `translate(${f[j * 6].toFixed(1)}px, ${f[j * 6 + 1].toFixed(1)}px) rotate(${f[j * 6 + 2].toFixed(3)}rad)`;
+      });
       let dir = 1, idx = 0, from = 0, raf = 0, last = 0, acc = 0;
       function tick(t) {
         acc += last ? Math.min(0.05, (t - last) / 1000) : STEP;
@@ -486,15 +466,13 @@
         if (dir > 0) {
           for (let j = 0; j < k && frames.length < MAX; j++) frames.push(step(frames[frames.length - 1]));
           idx = frames.length - 1;
-          draw(frames[idx], 0, 0);
+          show(frames[idx]);
           raf = frames.length < MAX ? requestAnimationFrame(tick) : 0;
         } else {
-          // rewind in at most about a second, ending wherever the name is now if the page has scrolled
-          idx = Math.max(0, idx - k * Math.max(1, from / 60));
-          const r = name.getBoundingClientRect(), p = from ? 1 - idx / from : 1;
-          draw(frames[Math.round(idx)], (r.left - rect0.left) * p, (r.top - rect0.top) * p);
+          idx = Math.max(0, idx - k * Math.max(1, from / 60)); // rewind in at most about a second
+          show(frames[Math.round(idx)]);
           if (idx > 0) raf = requestAnimationFrame(tick);
-          else { cv.remove(); removeEventListener("resize", fit); letters.forEach(el => (el.style.opacity = "")); anim = null; }
+          else { letters.forEach(el => (el.style.transform = el.style.transformOrigin = "")); anim = null; }
         }
       }
       const run = () => { cancelAnimationFrame(raf); last = 0; acc = 0; raf = requestAnimationFrame(tick); };
@@ -572,10 +550,48 @@
       return { forward() { dir = 1; name.style.filter = "url(#ghost)"; run(); }, back() { dir = -1; run(); } };
     }
 
-    const KINDS = [cubes, zip, ghost];
+    function flip() {
+      const GAP = 60, cs = getComputedStyle(h1), ink = cs.color, accent = cs.getPropertyValue("--accent").trim(), n = letters.length;
+      const P = "perspective(320px) rotateX";
+      let token = 0;
+      letters.forEach(el => (el.style.transformOrigin = "50% 55%"));
+      // one flip per letter: over the top, the colour switching while it's edge-on so the back reads as another face,
+      // then a little overshoot like a split-flap tile settling. The delay plus end delay add up the same for every
+      // letter, so playing them backwards staggers the flip-back too (last letter first).
+      const anims = letters.map((el, i) => el.animate([
+        { transform: `${P}(0deg)`, color: ink, easing: "ease-in" },
+        { transform: `${P}(90deg)`, color: ink, offset: 0.45 },
+        { transform: `${P}(90deg)`, color: accent, offset: 0.45, easing: "ease-out" },
+        { transform: `${P}(198deg)`, color: accent, offset: 0.78, easing: "ease-in-out" },
+        { transform: `${P}(174deg)`, color: accent, offset: 0.9, easing: "ease-in-out" },
+        { transform: `${P}(180deg)`, color: accent },
+      ], { duration: 560, delay: i * GAP, endDelay: (n - 1 - i) * GAP, fill: "both" }));
+      return {
+        forward() { token++; anims.forEach(a => { if (a.playbackRate < 0) a.reverse(); }); },
+        back() {
+          const my = ++token;
+          anims.forEach(a => { if (a.playbackRate > 0) a.reverse(); });
+          Promise.all(anims.map(a => a.finished)).then(() => {
+            if (my !== token) return;
+            anims.forEach(a => a.cancel());
+            letters.forEach(el => (el.style.transformOrigin = ""));
+            anim = null;
+          }, () => {});
+        },
+      };
+    }
+
+    // never the same animation twice in a row: pick evenly among the others
+    const KINDS = [tumble, zip, ghost, flip];
+    let prev = -1;
     name.addEventListener("pointerenter", e => {
       if (anim) anim.forward();
-      else anim = KINDS[Math.floor(Math.random() * KINDS.length)]();
+      else {
+        let k = Math.floor(Math.random() * (prev < 0 ? KINDS.length : KINDS.length - 1));
+        if (prev >= 0 && k >= prev) k++;
+        prev = k;
+        anim = KINDS[k]();
+      }
       clearTimeout(touchTimer);
       if (e.pointerType === "touch") touchTimer = setTimeout(() => anim && anim.back(), 2200);
     });
