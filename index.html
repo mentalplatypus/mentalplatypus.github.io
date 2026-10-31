@@ -405,12 +405,13 @@
 </div>
 
 <script>
-  // Hovering the name plays one of four animations at random, never the same one twice in a row, reversed when the
+  // Hovering the name plays one of five animations at random, never the same one twice in a row, reversed when the
   // pointer leaves:
   // tumble: the letters break apart and bounce around the window, then the flight rewinds them into place;
   // zip: each letter in turn crouches and shoots up off the screen, then drops back with a squash;
   // ghost: it wavers and fades away like a cartoon ghost, then wavers back;
-  // flip: the letters flip over one by one like a departures board, showing accent-coloured backs, then flip back.
+  // flip: the letters flip over one by one like a departures board, showing accent-coloured backs, then flip back;
+  // magnet: the letters dodge away from the pointer as it moves over the name, then spring back home.
   // All of them only move the nine letters (transforms), which keeps them smooth.
   // Hovering again while one is reversing picks that one back up instead of starting another. On touch screens a tap
   // plays one and it reverses by itself. Off for reduced motion.
@@ -427,7 +428,7 @@
 
     function tumble() {
       const STEP = 1 / 60, MAX = 300, G = 1800;
-      const n0 = name.getBoundingClientRect(), cx = n0.left + n0.width / 2;
+      const n0 = name.getBoundingClientRect(), cx = n0.left + n0.width / 2, pad = parseFloat(getComputedStyle(h1).fontSize) * 0.15;
       // each letter's centre and half size within the name's box, which stays put while the letters fly
       const box = letters.map(el => {
         const r = el.getBoundingClientRect();
@@ -443,14 +444,18 @@
       function step(prev) {
         const n = name.getBoundingClientRect(), W = document.documentElement.clientWidth, H = innerHeight, f = prev.slice();
         for (let i = 0, j = 0; i < f.length; i += 6, j++) {
+          // turn first, so the edges are checked against the box at its new angle. The glyphs spill a few pixels past
+          // their boxes (tight letter spacing), which still counts as page overflow, so they bounce a little early
+          // rather than flash a sideways scrollbar.
+          f[i + 2] += f[i + 5] * STEP;
           const b = box[j], c = Math.abs(Math.cos(f[i + 2])), sn = Math.abs(Math.sin(f[i + 2]));
-          const ex = b.w * c + b.h * sn, ey = b.w * sn + b.h * c, hx = n.left + b.x, hy = n.top + b.y;
+          const ex = b.w * c + b.h * sn + pad, ey = b.w * sn + b.h * c + pad, hx = n.left + b.x, hy = n.top + b.y;
           let x = hx + f[i], y = hy + f[i + 1], vx = f[i + 3], vy = f[i + 4], va = f[i + 5];
           vy += G * STEP; x += vx * STEP; y += vy * STEP;
           if (y > H - ey) { y = H - ey; vy = Math.abs(vy) < 60 ? 0 : -vy * 0.55; vx *= 0.8; va *= 0.7; }
           if (y < ey) { y = ey; vy = -vy * 0.6; }
           if (x < ex) { x = ex; vx = -vx * 0.7; va = -va; } else if (x > W - ex) { x = W - ex; vx = -vx * 0.7; va = -va; }
-          f[i] = x - hx; f[i + 1] = y - hy; f[i + 2] += va * STEP; f[i + 3] = vx; f[i + 4] = vy; f[i + 5] = va;
+          f[i] = x - hx; f[i + 1] = y - hy; f[i + 3] = vx; f[i + 4] = vy; f[i + 5] = va;
         }
         return f;
       }
@@ -581,10 +586,49 @@
       };
     }
 
+    // where the pointer is over the name, for the magnet
+    let px = 0, py = 0;
+    name.addEventListener("pointermove", e => { px = e.clientX; py = e.clientY; });
+
+    function magnet() {
+      const n0 = name.getBoundingClientRect(), fs = parseFloat(getComputedStyle(h1).fontSize);
+      const box = letters.map(el => {
+        const r = el.getBoundingClientRect();
+        return { x: r.left - n0.left + r.width / 2, y: r.top - n0.top + r.height / 2 };
+      });
+      // each letter is pushed away from the pointer, harder the closer it is, and pulled home by a spring that's a
+      // little underdamped, so letters dodge as the pointer moves and wobble as they settle; leaving switches the push off
+      const R = fs * 3.5, K = 60, PUSH = K * fs * 1.5, DAMP = 9;
+      const s = letters.map(() => ({ x: 0, y: 0, vx: 0, vy: 0 }));
+      letters.forEach(el => (el.style.transformOrigin = "50% 50%"));
+      let on = true, last = 0;
+      function tick(t) {
+        const dt = last ? Math.min(0.033, (t - last) / 1000) : 1 / 60, n = name.getBoundingClientRect();
+        last = t;
+        let moving = false;
+        s.forEach((p, i) => {
+          let ax = -K * p.x - DAMP * p.vx, ay = -K * p.y - DAMP * p.vy;
+          if (on) {
+            const dx = n.left + box[i].x + p.x - px, dy = n.top + box[i].y + p.y - py, d = Math.hypot(dx, dy) || 1;
+            if (d < R) { const f = PUSH * (1 - d / R) ** 2; ax += (f * dx) / d; ay += (f * dy) / d; }
+          }
+          p.vx += ax * dt; p.vy += ay * dt; p.x += p.vx * dt; p.y += p.vy * dt;
+          if (Math.abs(p.x) + Math.abs(p.y) > 0.3 || Math.abs(p.vx) + Math.abs(p.vy) > 3) moving = true;
+          const tilt = Math.max(-0.5, Math.min(0.5, p.vx * 0.0015));
+          letters[i].style.transform = `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px) rotate(${tilt.toFixed(3)}rad)`;
+        });
+        if (!on && !moving) { letters.forEach(el => (el.style.transform = el.style.transformOrigin = "")); anim = null; }
+        else requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+      return { forward() { on = true; }, back() { on = false; } };
+    }
+
     // never the same animation twice in a row: pick evenly among the others
-    const KINDS = [tumble, zip, ghost, flip];
+    const KINDS = [tumble, zip, ghost, flip, magnet];
     let prev = -1;
     name.addEventListener("pointerenter", e => {
+      px = e.clientX; py = e.clientY;
       if (anim) anim.forward();
       else {
         let k = Math.floor(Math.random() * (prev < 0 ? KINDS.length : KINDS.length - 1));
