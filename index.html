@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Inter:wght@400;500;600&display=swap">
+<!-- a handwritten face for the "hover me" note by the name, cut down to just the characters it uses -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&text=hovertapm%20%E2%86%90%E2%86%91&display=swap">
 <style>
   /* Layout: name and links, then "Ongoing projects", "Finished projects" and "Portfolio" in groups of cards.
      Dusk theme: a soft indigo → lilac → peach gradient (night blue → violet → plum in dark mode) with frosted cards.
@@ -65,9 +67,23 @@
     font-family: var(--font-display); font-weight: 800; font-size: clamp(2.4rem, 8vw, 4.2rem);
     letter-spacing: -0.04em; line-height: 0.95; margin: 0; overflow-wrap: anywhere;
   }
-  /* the name plays one of three hover animations (script at the end); the letters move with transforms only, so the
+  /* the name plays one of five hover animations (script at the end); the letters move with transforms only, so the
      name's box stays put under the pointer */
   h1 .name { display: inline-block; cursor: default; position: relative; z-index: 20; } /* letters fly over the cards */
+  /* a handwritten "hover me" note beside the name for visitors who haven't found the animations; the script places it
+     to the right of the name, or above it (in the page's top padding) when the line is too narrow */
+  h1 { position: relative; }
+  .hint {
+    position: absolute; top: 50%; font: 600 1.7rem "Caveat", "Segoe Print", cursive; letter-spacing: 0; line-height: 1;
+    color: var(--ink-soft); white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.6s;
+    transform: translateY(-50%) rotate(-5deg);
+  }
+  .hint.above { top: auto; bottom: calc(100% + 4px); transform: rotate(-3deg); }
+  .hint.show { opacity: 1; }
+  .hint span { display: inline-block; animation: nudge 1.6s ease-in-out infinite; }
+  .hint.above span { animation-name: nudge-down; }
+  @keyframes nudge { 50% { transform: translateX(-4px); } }
+  @keyframes nudge-down { 50% { transform: translateY(4px); } }
   h1 .name span { display: inline-block; transform-origin: 50% 100%; }
   .lede { margin: 14px 0 0; color: var(--ink-soft); font-size: 1rem; line-height: 1.6; max-width: 56ch; }
   .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 0; padding: 0; list-style: none; }
@@ -627,7 +643,60 @@
     // never the same animation twice in a row: pick evenly among the others
     const KINDS = [tumble, zip, ghost, flip, magnet];
     let prev = -1;
+    // Nudges for visitors who haven't found the animations yet: every so often one letter fidgets (a hop, a tilt or a
+    // wiggle), and after 6 s a handwritten "hover me" note fades in beside the name. Both stop at the first hover; the
+    // note is also remembered (localStorage "name-found"), so it never shows again once someone has found them.
+    let found = false, fidget = null, fidgetTimer = 0, hintTimer = 0, hint = null;
+    const seen = (() => { try { return localStorage.getItem("name-found") === "1"; } catch { return false; } })();
+    const FIDGETS = [
+      [{ transform: "none", easing: "ease-out" }, { transform: "translateY(-28%) scale(0.95, 1.08)", offset: 0.35, easing: "ease-in" },
+       { transform: "translateY(0) scale(1.15, 0.85)", offset: 0.6 }, { transform: "scale(0.97, 1.03)", offset: 0.8 }, { transform: "none" }],
+      [{ transform: "none" }, { transform: "rotate(-14deg)", offset: 0.3 }, { transform: "rotate(9deg)", offset: 0.55 },
+       { transform: "rotate(-4deg)", offset: 0.78 }, { transform: "none" }],
+      [{ transform: "none" }, { transform: "rotate(7deg)", offset: 0.2 }, { transform: "rotate(-7deg)", offset: 0.4 },
+       { transform: "rotate(5deg)", offset: 0.6 }, { transform: "rotate(-3deg)", offset: 0.8 }, { transform: "none" }],
+    ];
+    function nextFidget(ms) {
+      fidgetTimer = setTimeout(() => {
+        const r = name.getBoundingClientRect();
+        if (!found && !anim && !document.hidden && r.bottom > 0 && r.top < innerHeight) {
+          const el = letters[Math.floor(Math.random() * letters.length)];
+          fidget = el.animate(FIDGETS[Math.floor(Math.random() * FIDGETS.length)], { duration: 650, easing: "ease-in-out" });
+        }
+        if (!found) nextFidget(rand(5000, 8000));
+      }, ms);
+    }
+    nextFidget(2500);
+    if (!seen) {
+      const touch = matchMedia("(hover: none)").matches;
+      hint = document.createElement("span");
+      hint.className = "hint";
+      hint.setAttribute("aria-hidden", "true");
+      // beside the name, pointing back at it, or above it pointing down when the line is too narrow
+      const place = () => {
+        const word = touch ? "tap" : "hover";
+        hint.classList.remove("above");
+        hint.innerHTML = `<span>←</span> ${word} me`;
+        const above = h1.clientWidth - name.offsetWidth < hint.offsetWidth + 14;
+        if (above) { hint.classList.add("above"); hint.innerHTML = `<span>↓</span> ${word} me`; }
+        hint.style.left = above ? "8px" : `${name.offsetWidth + 10}px`;
+      };
+      h1.appendChild(hint);
+      place();
+      addEventListener("resize", place);
+      document.fonts.ready.then(place);
+      hintTimer = setTimeout(() => hint.classList.add("show"), 6000);
+    }
+    function discover() {
+      found = true;
+      clearTimeout(fidgetTimer); clearTimeout(hintTimer);
+      if (fidget) fidget.cancel(); // it would override the hover animation's transforms
+      if (hint) hint.classList.remove("show");
+      try { localStorage.setItem("name-found", "1"); } catch {}
+    }
+
     name.addEventListener("pointerenter", e => {
+      if (!found) discover();
       px = e.clientX; py = e.clientY;
       if (anim) anim.forward();
       else {
